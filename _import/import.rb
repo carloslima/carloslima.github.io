@@ -102,7 +102,7 @@ class Post
     [
       '---',
       %{layout: post},
-      %{title: #{title}},
+      %{title: '#{title}'},
       %{date: #{creation_datetime}},
       %{comments: true},
       permalink ? %{permalink: #{permalink}} : '',
