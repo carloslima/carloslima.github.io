@@ -41,19 +41,21 @@ def write(post)
     file.write "<div class='post'>\n"
     file.write post.content
     file.write "</div>\n"
-    file.write "<h2>Comments</h2>\n"
-    file.write "<div class='comments'>\n"
-    post.comments.each do |comment|
-      file.write "<div class='comment'>\n"
-      file.write "<div class='author'>"
-      file.write comment.author
-      file.write "</div>\n"
-      file.write "<div class='content'>\n"
-      file.write comment.content
-      file.write "</div>\n"
+    if false # I think I want Disqus? not sure
+      file.write "<h2>Comments</h2>\n"
+      file.write "<div class='comments'>\n"
+      post.comments.each do |comment|
+        file.write "<div class='comment'>\n"
+        file.write "<div class='author'>"
+        file.write comment.author
+        file.write "</div>\n"
+        file.write "<div class='content'>\n"
+        file.write comment.content
+        file.write "</div>\n"
+        file.write "</div>\n"
+      end
       file.write "</div>\n"
     end
-    file.write "</div>\n"
   end
 end
 
@@ -76,6 +78,13 @@ class Post
     @node.search('content').first.content
   end
 
+  def permalink
+    orig_permalink = @node.search('link').find{|el| el.attr('rel') == 'alternate'}.attr('href')
+    orig_permalink.gsub(%r{^http[^/]+//[^/]+},'')
+  rescue
+    false
+  end
+
   def creation_date
     creation_datetime.strftime("%Y-%m-%d")
   end
@@ -96,6 +105,7 @@ class Post
       %{title: #{title}},
       %{date: #{creation_datetime}},
       %{comments: false},
+      permalink ? %{permalink: #{permalink}} : '',
       '---'
     ].join("\n")
   end
