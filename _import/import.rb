@@ -104,7 +104,7 @@ class Post
       %{layout: post},
       %{title: #{title}},
       %{date: #{creation_datetime}},
-      %{comments: false},
+      %{comments: true},
       permalink ? %{permalink: #{permalink}} : '',
       '---'
     ].join("\n")
