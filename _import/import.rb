@@ -37,7 +37,6 @@ def write(post)
   File.open(File.join('_posts', post.file_name), 'w') do |file|
     file.write post.header
     file.write "\n\n"
-    file.write "<h1>{{ page.title }}</h1>\n"
     file.write "<div class='post'>\n"
     file.write post.content
     file.write "</div>\n"
