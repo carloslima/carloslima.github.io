@@ -4,7 +4,7 @@
   <title><![CDATA[carlos@blog ~/notes>]]></title>
   <link href="http://blog.carloslima.name/atom.xml" rel="self"/>
   <link href="http://blog.carloslima.name/"/>
-  <updated>2013-10-16T01:15:33+08:00</updated>
+  <updated>2013-10-16T04:27:14+08:00</updated>
   <id>http://blog.carloslima.name/</id>
   <author>
     <name><![CDATA[Carlos Lima]]></name>
@@ -12,6 +12,218 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[git submodules: how (not) to use it.]]></title>
+    <link href="http://blog.carloslima.name/blog/2013/10/16/git-submodules-how-not-to-use-it/"/>
+    <updated>2013-10-16T01:35:00+08:00</updated>
+    <id>http://blog.carloslima.name/blog/2013/10/16/git-submodules-how-not-to-use-it</id>
+    <content type="html"><![CDATA[<h1>Intro (or What&rsquo;s a git submodule?)</h1>
+
+<p>On our system, /dev/SuperFoo/sub-bar is a submodule of SuperFoo.git repository.</p>
+
+<pre><code>carlos@carlosdev /d/SuperFoo (master)&gt; git log -1
+commit c2abbad057a02a2bd0d7c1e1c74048da6ef88234
+Author: Chuck Norris &lt;chuck@example.com&gt;
+Date:   Thu Oct 10 02:35:16 2013 +0000
+
+    Updated to latest translation
+</code></pre>
+
+<p>&nbsp;</p>
+
+<pre><code>carlos@carlosdev /d/SuperFoo (master)&gt; cd sub-bar
+carlos@carlosdev /d/S/sub-bar ((2279a91))&gt; git log -1
+commit 2279a9187b023f79cf274f52a76fe5059f119914
+Merge: fc57e1a a3110e8
+Author: Chuck Norris &lt;chuck@example.com&gt;
+Date:   Thu Oct 10 02:24:15 2013 +0000
+
+    Merge branch 'master' into currenttranslations
+</code></pre>
+
+<h1>so what?</h1>
+
+<p>They are disconnected, despite being shown/accessible as a regular subdirectory of your main project.</p>
+
+<h2>again?</h2>
+
+<pre><code>carlos@carlosdev /d/SuperFoo (master)&gt; vi sub-bar/templates/home/login.html.haml cgi/fooish.cgi
+..(change change change)..
+carlos@carlosdev /d/SuperFoo (master)&gt; git status
+
+# On branch master
+# Changes not staged for commit:
+#   (use "git add &lt;file&gt;..." to update what will be committed)
+#   (use "git checkout -- &lt;file&gt;..." to discard changes in working directory)
+#   (commit or discard the untracked or modified content in submodules)
+#
+#       modified:   sub-bar (modified content)
+#       modified:   cgi/fooish.cgi
+#
+no changes added to commit (use "git add" and/or "git commit -a")
+</code></pre>
+
+<p>sub-bar/ files <em>are not</em> part of your repository!</p>
+
+<p>Look again:</p>
+
+<pre><code>carlos@carlosdev /d/SuperFoo (master)&gt; git diff
+diff --git a/sub-bar b/sub-bar
+--- a/sub-bar
++++ b/sub-bar
+@@ -1 +1 @@
+-Subproject commit 2279a9187b023f79cf274f52a76fe5059f119914
++Subproject commit 2279a9187b023f79cf274f52a76fe5059f119914-dirty
+diff --git a/cgi/fooish.cgi b/cgi/fooish.cgi
+index c607f79..2b1ce17 100755
+--- a/cgi/fooish.cgi
++++ b/cgi/fooish.cgi
+@@ -1,4 +1,3 @@
+-#!/usr/bin/perl
+
+ use strict;
+ use warnings;
+carlos@carlosdev /d/SuperFoo (master)&gt; 
+</code></pre>
+
+<h1>Ok, got it. But what&rsquo;s the deal? (or, What could possibly go wrong?)</h1>
+
+<p>This <em>happened</em> before, more than once. Not hypothetical.</p>
+
+<pre><code>carlos@carlosdev /d/SuperFoo (bugfixes)&gt; git status
+# On branch bugfixes
+# Your branch is behind 'origin/bugfixes' by 1813 commits, and can be fast-forwarded.
+#
+nothing to commit (working directory clean)
+
+carlos@carlosdev /d/SuperFoo (bugfixes)&gt; git rebase -p
+Successfully rebased and updated refs/heads/bugfixes.
+</code></pre>
+
+<p>All good. Let&rsquo;s go fix our ticket!</p>
+
+<pre><code>carlos@carlosdev /d/SuperFoo (bugfixes)&gt; vi lib/README.txt 
+carlos@carlosdev /d/SuperFoo (bugfixes)&gt; git diff
+diff --git a/sub-bar b/sub-bar
+index 8b6fa45..eac1423 160000
+--- a/sub-bar
++++ b/sub-bar
+@@ -1 +1 @@
+-Subproject commit 8b6fa45a258e37293d472c81844a3c37e921b6f9
++Subproject commit eac1423fcb1812e0ff958712231dddc06687733c
+diff --git a/lib/README.txt b/lib/README.txt
+index 293a71f..e9a6e01 100644
+--- a/lib/README.txt
++++ b/lib/README.txt
+@@ -1,4 +1,4 @@
+ This directory holds shared code between all sub-projects. Please keep it clean.
+
+-See https://internal.example.com/wiki/code-rules
++See https://example.thirdparty-inthecloud.net/wiki/code-rules
+</code></pre>
+
+<p>Looks good, simple enough.</p>
+
+<pre><code>carlos@carlosdev /d/SuperFoo (bugfixes)&gt; git commit -am 'Fix wrong url'
+[bugfixes 9ecfc7d] Fix wrong url
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+</code></pre>
+
+<p>Cheers! We just rolled back sub-bar by 1 month.</p>
+
+<pre><code>carlos@carlosdev /d/S/sub-bar ((eac1423))&gt; git log -1 8b6fa45a258e37293d472c81844a3c37e921b6f9
+commit 8b6fa45a258e37293d472c81844a3c37e921b6f9
+Author: Michelle Yeoh &lt;mi@example.com&gt;
+Date:   Thu Oct 3 11:52:38 2013 +0000
+
+    Translated using Weblate (Portuguese)
+
+    Currently translated at 100.0% (448 of 448 strings)
+</code></pre>
+
+<p>&nbsp;</p>
+
+<pre><code>carlos@carlosdev /d/S/sub-bar ((eac1423))&gt; git log -1 eac1423fcb1812e0ff958712231dddc06687733c
+commit eac1423fcb1812e0ff958712231dddc06687733c
+Author: Angelina Jolie &lt;angie@example.com&gt;
+Date:   Mon Sep 2 02:10:57 2013 +0000
+
+    Tidy
+</code></pre>
+
+<p>Next time bugfixes gets released, the version of sub-bar in production will be from 1 month ago.</p>
+
+<p>Not just minor changes..</p>
+
+<pre><code>carlos@carlosdev /d/S/sub-bar ((eac1423))&gt; git diff --stat eac1423..8b6fa45
+.. snip ..
+78 files changed, 5871 insertions(+), 1435 deletions(-)
+</code></pre>
+
+<h1>Why did that happen?</h1>
+
+<p>Because it is a separate repository, git only tracks three things about the submodule:</p>
+
+<ul>
+<li>url of the external repository</li>
+<li>path where the files will be put/cloned</li>
+<li>the commit id from that repository that you want to use.</li>
+</ul>
+
+
+<p>They are:</p>
+
+<pre><code>carlos@carlosdev /d/SuperFoo (bugfixes)&gt; cat .gitmodules
+[submodule "sub-bar"]
+    path = sub-bar
+    url = git@bitbucket.org:exampledotcom/sub-bar.git
+
+carlos@carlosdev /d/SuperFoo (bugfixes)&gt; git ls-tree bugfixes
+..snip..
+100644 blob 2d918f0b794c059d6900e7211cd34e22aa395a77    Makefile   ← file
+040000 tree 486d5dafd1d4fd7ff4f8cf3b273d5912e84666ae    api        ← directory
+160000 commit eac1423fcb1812e0ff958712231dddc06687733c  sub-bar    ← submodule (commit id to use)
+..snip..
+</code></pre>
+
+<p>When we did the rebase, the changes included updates to the version of sub-bar that the SuperFoo repository should be using.<br/>
+But git <em>DOES NOT</em> checkout that new version inside the sub-bar directory.</p>
+
+<p>Git knows we should be using commit 8b6fa45<br/>
+But on sub-bar directory we have eac1423 (from before the rebase)</p>
+
+<p>It doesn&rsquo;t know (or care) if the commits are newer, older, etc.<br/>
+So, when we did <code>git commit -am'...'</code> without paying attention to that sub-bar mention that appeared on <code>git diff</code> or <code>git status</code>, we told git that we want it to use commit eac1423, which is what we have checked out at the moment.</p>
+
+<h1>This is really confusing. I don&rsquo;t care about sub-bar and I&rsquo;m not touching it, how do I avoid breaking things?</h1>
+
+<p>First and foremost, when <code>git status</code> or <code>git diff</code> shows sub-bar, <em>do not ignore it</em>.</p>
+
+<p>The root cause is that when you move your repository to a different state, git won&rsquo;t automatically move the submodule to the new expected commit.<br/>
+So we fix it with <code>git submodule update</code>.</p>
+
+<p>The name might be counter-intuitive, but <code>git submodule update</code> doesn&rsquo;t change/write/commit/push the submodule, it just runs a checkout of the expected commit.</p>
+
+<p>Second, don&rsquo;t <code>git add sub-bar</code>;<br/>
+(Unless updating the submodule to a new version is what you&rsquo;re trying to do.)</p>
+
+<h2>Caveats</h2>
+
+<h3>Bitbucket</h3>
+
+<p>Bitbucket (as of 2013-10-10) won&rsquo;t show changes to submodules on their diff.<br/>
+That means reviewers won&rsquo;t be able to see that you made a mistake!</p>
+
+<h3>git commit -a / git commit .</h3>
+
+<p>Please, don&rsquo;t do it. Ever.<br/>
+This will happily commit every change you have on disk.<br/>
+It is an horrible practice, much more dangerous when submodules are involved.<br/>
+Always review your changes with <code>git status</code> and <code>git diff</code>.<br/>
+Don&rsquo;t commit anything you didn&rsquo;t mean to.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[method_missing and respond_to?: doing it properly]]></title>
