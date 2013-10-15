@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>method_missing and respond_to?: doing it properly - carlos@blog ~/notes></title>
+  <meta name="author" content="Carlos Lima">
+
+  
+  <meta name="description" content="pre.blackboard { font-size:13px; line-height:1; } pre.blackboard .LatexSupport { color: #FBDE2D; } pre.blackboard .OcamlInfixOperator { color: # &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://carloslima.github.io/2010/03/methodmissing-and-respondto-doing-it.html">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="carlos@blog ~/notes>" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">carlos@blog ~/notes></a></h1>
+  
+    <h2>\o/</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:carloslima.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Method_missing and Respond_to?: Doing It Properly</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-09T00:00:00+08:00" pubdate data-updated="true">Mar 9<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><div class='post'>
+<style>pre.blackboard {   font-size:13px;   line-height:1; } pre.blackboard .LatexSupport {    color: #FBDE2D; } pre.blackboard .OcamlInfixOperator {    color: #8DA6CE; } pre.blackboard .MetaFunctionCallPy {    color: #BECDE6; } pre.blackboard .Superclass {    color: #FF6400;    font-style: italic; } pre.blackboard .Constant {    color: #D8FA3C; } pre.blackboard {    background-color: #0C1021;    color: #F8F8F8; } pre.blackboard .OcamlFPConstant {    text-decoration: underline; } pre.blackboard .OcamlFPInfixOperator {    text-decoration: underline; } pre.blackboard .Support {    color: #8DA6CE; } pre.blackboard .OcamlOperator {    color: #F8F8F8; } pre.blackboard .Storage {    color: #FBDE2D; } pre.blackboard .line-numbers {    background-color: #253B76;    color: #FFFFFF; } pre.blackboard .StringInterpolation {    color: #FF6400; } pre.blackboard .InvalidIllegal {    background-color: #9D1E15;    color: #F8F8F8; } pre.blackboard .PlistUnquotedString {    color: #FFFFFF; } pre.blackboard .OcamlVariant {    color: #D5E0F3; } pre.blackboard .MetaTag {    color: #7F90AA; } pre.blackboard .LatexEnvironment {    background-color: #F7F7F8; } pre.blackboard .OcamlFPPrefixOperator {    text-decoration: underline; } pre.blackboard .OcamlPrefixOperator {    color: #8DA6CE; } pre.blackboard .EntityNameSection {    color: #FFFFFF; } pre.blackboard .String {    color: #61CE3C; } pre.blackboard .Keyword {    color: #FBDE2D; } pre.blackboard .LatexEnvironmentNested {    background-color: #7691F3; } pre.blackboard .InvalidDeprecated {    color: #AB2A1D;    font-style: italic; } pre.blackboard .Variable { } pre.blackboard .Entity {    color: #FF6400; } pre.blackboard .Comment {    color: #AEAEAE; } </style><br />Sometime ago while using method_missing to implement some functionality I got the weird behavior that it would work only <em>most</em> of the time but not always.<br />In retrospect it&#8217;s now pretty obvious but in the heat of the moment it took me about half a day of investigation and talking before I figured it out.<br /><br />What happened is that I did only half of the work.<br />I defined method_missing but I forgot to define respond_to? accordingly.<br />The result is that it worked when I called it directly on the instance, but failed if an association was involved.<br /><br />To give an example, say you have a class like this:<br /><br /><pre class="blackboard"><span class="Keyword">class</span> <span class="Entity">A<span class="Superclass"> <span class="Superclass">&lt;</span> ActiveRecord::Base</span></span><br />  <span class="Keyword">def</span> <span class="Entity">example</span><br />    <span class="Constant">true</span><br />  <span class="Keyword">end</span><br /><br />  <span class="Keyword">def</span> <span class="Entity">method_missing</span>(<span class="Variable">method<span class="Variable">,</span> <span class="Keyword">*</span>args</span>)<br />    <span class="Keyword">if</span> method.<span class="Entity">to_s</span> <span class="Keyword">=~</span> <span class="String"><span class="String">/</span></span><span class="String">example</span><span class="String"><span class="String">/</span></span><br />      example<br />    <span class="Keyword">else</span><br />      <span class="Keyword">super</span><br />    <span class="Keyword">end</span><br />  <span class="Keyword">end</span><br /><span class="Keyword">end</span><br /></pre><br />Calling *example* directly on your instance works just fine.<br /><code>&gt;&gt; <span class="bright">A.new.my_example</span><br />=&gt; true<br /><br />&gt;&gt; <span class="bright">A.create!.example_me?</span><br />=&gt; true<br /></code><br /><br />All fine, but as soon as you get an association in the middle of things:<br /><br /><pre class="blackboard"><span class="Keyword">class</span> <span class="Entity">B<span class="Superclass"> <span class="Superclass">&lt;</span> ActiveRecord::Base</span></span><br />  <span class="Support">belongs_to</span> <span class="Constant"><span class="Constant">:</span>a</span><br /><span class="Keyword">end</span><br /></pre><br />It just doesn&#8217;t go well anymore:<br /><br /><code>&gt;&gt; <span class="bright">b = B.new(:a=&gt;A.new)</span><br />=&gt; #&lt;B id: nil, a_id: nil, created_at: nil, updated_at: nil&gt;<br /><br />&gt;&gt; <span class="bright">b.a.example?</span><br />NoMethodError: undefined method `example?' for #&lt;A id: nil, created_at: nil, updated_at: nil&gt;<br />from /var/lib/gems/1.8/gems/activerecord-2.3.5/lib/active_record/associations/association_proxy.rb:220:in `method_missing'<br />from (irb):55<br /><br />&gt;&gt; <span class="bright">b = B.create!(:a=&gt;A.create!)</span><br />=&gt; #&lt;B id: 4, a_id: 7, created_at: "2010-03-08 21:15:01", updated_at: "2010-03-08 21:15:01"&gt;<br />&gt;&gt; <span class="bright">b.a.failing_example</span><br />NoMethodError: undefined method `failing_example' for #&lt;ActiveRecord::Associations::BelongsToAssociation:0xb70491d0&gt;<br />from /var/lib/gems/1.8/gems/activerecord-2.3.5/lib/active_record/associations/association_proxy.rb:220:in `method_missing'<br />from (irb):57<br /></code><br /><br />Now, this last error is a bit clearer but I don&#8217;t remember running into it at the time.<br />If I had just followed the association_proxy:220 hint right away&#8230; ;)<br /><br />What happens is that b.a doesn&#8217;t return the instance but rather an <a href="http://apidock.com/rails/ActiveRecord/Associations/AssociationProxy">AssociationProxy</a> instance that provides ActiveRecord&#8217;s extended functionality and this proxy relies on A#respond_to? to correctly forward method calls to the actual instance.<br /><br />What I should have done is:<br /><br /><pre class="blackboard"><span class="Keyword">class</span> <span class="Entity">A<span class="Superclass"> <span class="Superclass">&lt;</span> ActiveRecord::Base</span></span><br />  <span class="Keyword">def</span> <span class="Entity">example</span><br />    <span class="Constant">true</span><br />  <span class="Keyword">end</span><br /><br />  <span class="Keyword">def</span> <span class="Entity">method_missing</span>(<span class="Variable">method<span class="Variable">,</span> <span class="Keyword">*</span>args</span>)<br />    <span class="Keyword">if</span> method.<span class="Entity">to_s</span> <span class="Keyword">=~</span> <span class="String"><span class="String">/</span></span><span class="String">example</span><span class="String"><span class="String">/</span></span><br />      example<br />    <span class="Keyword">else</span><br />      <span class="Keyword">super</span><br />    <span class="Keyword">end</span><br />  <span class="Keyword">end</span><br /><br />  <span class="Keyword">def</span> <span class="Entity">respond_to?</span>(<span class="Variable">method<span class="Variable">,</span> include_private <span class="Keyword">=</span> <span class="Constant">false</span></span>)<br />    <span class="Keyword">if</span> method.<span class="Entity">to_s</span> <span class="Keyword">=~</span> <span class="String"><span class="String">/</span></span><span class="String">example</span><span class="String"><span class="String">/</span></span><br />      <span class="Constant">true</span><br />    <span class="Keyword">else</span><br />      <span class="Keyword">super</span><br />    <span class="Keyword">end</span><br />  <span class="Keyword">end</span><br /><span class="Keyword">end</span><br /></pre><br /><code>>> <span class="bright">B.create!(:a=>A.create!).a.example?</span><br />=> true<br />>> <span class="bright">B.new(:a=>A.new).a.failing_example</span><br />=> true<br /></code><br /><br />There are some much better write-ups on this topic, if you want to read more:<br /><a href="http://technicalpickles.com/posts/using-method_missing-and-respond_to-to-create-dynamic-methods/">Using method_missing and respond_to? to create dynamic methods</a><br /><a href="http://coderrr.wordpress.com/2008/07/11/solving-the-method_missing-respond_to-problem/">Solving the method_missing/respond_to? problem</a><br /><br /><br />Now, I must be honest here: what I was doing was a <b>big</b> code smell :)<br />It taught me the lesson to use method_missing properly and was even quite fun to debug and all that but what I really needed and end up doing in that case was a group of <a href="http://apidock.com/rails/Module/delegate">delegates</a> here and there and voilà, it was all cool and clean.</div>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Carlos Lima</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-09T00:00:00+08:00" pubdate data-updated="true">Mar 9<span>th</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://carloslima.github.io/2010/03/methodmissing-and-respondto-doing-it.html" data-via="" data-counturl="http://carloslima.github.io/2010/03/methodmissing-and-respondto-doing-it.html" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2010/03/solutionatic-pair-programming.html" title="Previous Post: Solutionatic Pair Programming">&laquo; Solutionatic Pair Programming</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2010/03/methodmissing-and-respondto-doing-it.html">Method_missing and Respond_to?: Doing It Properly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/03/solutionatic-pair-programming.html">Solutionatic Pair Programming</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/03/rsnapshot-style-backups-on-dreamhost.html">RSnapshot-style Backups on Dreamhost</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/02/hosting-your-git-repository-on.html">Hosting Your GIT Repository on DreamHost</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/carloslima">@carloslima</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'carloslima',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Carlos Lima -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'endlessramblings';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://carloslima.github.io/2010/03/methodmissing-and-respondto-doing-it.html';
+        var disqus_url = 'http://carloslima.github.io/2010/03/methodmissing-and-respondto-doing-it.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
