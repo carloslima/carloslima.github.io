@@ -4,7 +4,7 @@
   <title><![CDATA[Category: dns | carlos@blog ~/notes>]]></title>
   <link href="http://blog.carloslima.name/blog/categories/dns/atom.xml" rel="self"/>
   <link href="http://blog.carloslima.name/"/>
-  <updated>2013-10-18T03:46:28+08:00</updated>
+  <updated>2013-10-18T04:03:06+08:00</updated>
   <id>http://blog.carloslima.name/</id>
   <author>
     <name><![CDATA[Carlos Lima]]></name>
@@ -28,7 +28,9 @@
 github.com has address 192.30.252.129
 </code></pre>
 
-<p>The reverse dns entry for that is: <code>129.252.30.192.in-addr.arpa</code><br/>
+<p>The key thing to remember is that it is the same as forward dns, just on a &ldquo;funny&rdquo; zone name.</p>
+
+<p>In our example, the reverse dns record is: <code>129.252.30.192.in-addr.arpa</code><br/>
 (and the zone <code>252.30.192.in-addr.arpa</code>)</p>
 
 <h2>Find the authority over that zone:</h2>
