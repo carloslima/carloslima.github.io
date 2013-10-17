@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>RSnapshot-style backups on Dreamhost - carlos@blog ~/notes></title>
+  <title>dns and ptr records quick notes - carlos@blog ~/notes></title>
   <meta name="author" content="Carlos Lima">
 
   
-  <meta name="description" content="DHSnapshotA while ago I needed to find a good setup for backing up some machines.I wanted to use RSync to do snapshots-like backups.This setup is:* &hellip;">
+  <meta name="description" content="Every once in a blue moon I get to troubleshoot, help someone with or explain how reverse dns works but somehow it keeps getting misplaced inside my &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.carloslima.name/2010/03/rsnapshot-style-backups-on-dreamhost.html">
+  <link rel="canonical" href="http://blog.carloslima.name/blog/2013/10/18/dns-and-ptr-records-quick-notes">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="carlos@blog ~/notes>" type="application/atom+xml">
@@ -77,7 +77,7 @@
   
   <header>
     
-      <h1 class="entry-title">RSnapshot-style Backups on Dreamhost</h1>
+      <h1 class="entry-title">Dns and Ptr Records Quick Notes</h1>
     
     
       <p class="meta">
@@ -93,15 +93,116 @@
   
 
 
-<time datetime="2010-03-02T00:00:00+08:00" pubdate data-updated="true">Mar 2<span>nd</span>, 2010</time>
+<time datetime="2013-10-18T03:18:00+08:00" pubdate data-updated="true">Oct 18<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><div class='post'>
-<h1>DHSnapshot</h1>A while ago I needed to find a good setup for backing up some machines.<br /><br />I wanted to use <a href="http://samba.anu.edu.au/rsync/">RSync</a> to do <a href="http://www.mikerubel.org/computers/rsync_snapshots/">snapshots-like backups</a>.<br /><br />This setup is:<br />* Off-site<br />* Storage efficient (the bulk of my backup was unlikely to ever change)<br />* Network efficient (only transfer changed files)<br />* Keeps versions going back a few months<br /><br />Now, <a href="http://www.dreamhost.com">DreamHost</a> offers 50GB of free space for personal backups and that seemed a good fit for this particular situation.<br /><br />Then I found <a href="http://rsnapshot.org/">RSnapshot</a> and it was exactly what I needed.<br />Unfortunately, RSnapshot doesn&#8217;t backup to an external server. <br />It&#8217;s meant to work in a setup where the server hosting the backups connects to your data sources and pull the files.<br />That totally makes sense and is probably the best setup but it wouldn&#8217;t work for me.<br /><br />DreamHost doesn&#8217;t have RSnapshot installed on their backup servers and the only access users have to that machine is SFTP and RSync. <br />I needed something that would work with just that.<br /><br />I came across a post about <a href="http://blog.wangling.me/2009/07/meta-backup-dreamhost-on-dreamhost-backups/">backing up DreamHost websites to DreamHost Backups</a> that showed a workaround to the lack of SSH access to the backups service.<br /><br />So I took the idea, mixed it up with the stuff I wanted from RSnapshot and wrote a small perl script to do it.<br /><br />It&#8217;s called <a href="http://github.com/carloslima/dhsnapshot">dhsnapshot</a> and is published at GitHub: <a href="http://github.com/carloslima/dhsnapshot">http://github.com/carloslima/dhsnapshot</a> <br /><br />At this moment, it&#8217;s not very flexible: it&#8217;s hardwired to keep 7 daily, 4 weekly and 6 monthly backups and it&#8217;s also limited to a single backup source (you can only point it to one source directory)<br />But it&#8217;s not hard to change, or even make it configurable.<br />I might do it if I ever get the need or motivation :)<br /><br />One way or the other, it should be reasonably simple to setup (<a href="http://github.com/carloslima/dhsnapshot#readme">instructions on GitHub</a>).<br /><br />I&#8217;d be glad to know if it helped anyone.<br />So, please, drop me a comment if you fnd it useful.</div>
+<div class="entry-content"><p>Every once in a blue moon I get to troubleshoot, help someone with or explain how reverse dns works but somehow it keeps getting misplaced inside my brain.</p>
+
+<p>So, for my future self, here it is:</p>
+
+<p>As example, lets pick github&rsquo;s IP.</p>
+
+<pre><code>[carlos@multi ~]$ host github.com
+github.com has address 192.30.252.129
+</code></pre>
+
+<p>The reverse dns entry for that is: <code>129.252.30.192.in-addr.arpa</code><br/>
+(and the zone <code>252.30.192.in-addr.arpa</code>)</p>
+
+<h2>Find the authority over that zone:</h2>
+
+<pre><code>[carlos@multi ~]$ dig 129.252.30.192.in-addr.arpa
+
+; &lt;&lt;&gt;&gt; DiG 9.8.1-P1 &lt;&lt;&gt;&gt; 129.252.30.192.in-addr.arpa
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 21414
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;129.252.30.192.in-addr.arpa.   IN      A
+
+;; AUTHORITY SECTION:
+252.30.192.in-addr.arpa. 60     IN      SOA     ns1.p16.dynect.net. ops.github.com. 7 3600 600 604800 60
+
+;; Query time: 72 msec
+;; SERVER: 127.0.1.1#53(127.0.1.1)
+;; WHEN: Fri Oct 18 03:25:41 2013
+;; MSG SIZE  rcvd: 113
+</code></pre>
+
+<h2>Get the PTR record for that ip:</h2>
+
+<pre><code>[carlos@multi ~]$ dig PTR 129.252.30.192.in-addr.arpa
+
+; &lt;&lt;&gt;&gt; DiG 9.8.1-P1 &lt;&lt;&gt;&gt; PTR 129.252.30.192.in-addr.arpa
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 29787
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;129.252.30.192.in-addr.arpa.   IN  PTR
+
+;; ANSWER SECTION:
+129.252.30.192.in-addr.arpa. 3189 IN    PTR ip1b-lb3-prd.iad.github.com.
+
+;; Query time: 29 msec
+;; SERVER: 127.0.1.1#53(127.0.1.1)
+;; WHEN: Fri Oct 18 03:28:44 2013
+;; MSG SIZE  rcvd: 86
+</code></pre>
+
+<h3>Directly from authority</h3>
+
+<p>And if you&rsquo;re trying to troubleshoot whether your ISP correctly updated the PTR records you requested, you can ask the authority directly and avoid waiting for propagation:</p>
+
+<pre><code>[carlos@multi ~]$ dig PTR 129.252.30.192.in-addr.arpa @ns1.p16.dynect.net
+
+; &lt;&lt;&gt;&gt; DiG 9.8.1-P1 &lt;&lt;&gt;&gt; PTR 129.252.30.192.in-addr.arpa @ns1.p16.dynect.net
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 51495
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 4, ADDITIONAL: 0
+;; WARNING: recursion requested but not available
+
+;; QUESTION SECTION:
+;129.252.30.192.in-addr.arpa.   IN      PTR
+
+;; ANSWER SECTION:
+129.252.30.192.in-addr.arpa. 3600 IN    PTR     ip1b-lb3-prd.iad.github.com.
+
+;; AUTHORITY SECTION:
+252.30.192.in-addr.arpa. 86400  IN      NS      ns1.p16.dynect.net.
+252.30.192.in-addr.arpa. 86400  IN      NS      ns3.p16.dynect.net.
+252.30.192.in-addr.arpa. 86400  IN      NS      ns2.p16.dynect.net.
+252.30.192.in-addr.arpa. 86400  IN      NS      ns4.p16.dynect.net.
+
+;; Query time: 476 msec
+;; SERVER: 2001:500:90:1::16#53(2001:500:90:1::16)
+;; WHEN: Fri Oct 18 03:31:39 2013
+;; MSG SIZE  rcvd: 172
+</code></pre>
+
+<h2>Just simple resolution</h2>
+
+<p>Now, for completeness sake, if all you want is the reverse dns, remember that <code>host</code> works on both ip and name.</p>
+
+<pre><code>[carlos@multi ~]$ host github.com
+github.com has address 192.30.252.130
+github.com mail is handled by 30 ASPMX3.GOOGLEMAIL.com.
+github.com mail is handled by 30 ASPMX2.GOOGLEMAIL.com.
+github.com mail is handled by 20 ALT1.ASPMX.L.GOOGLE.com.
+github.com mail is handled by 10 ASPMX.L.GOOGLE.com.
+github.com mail is handled by 20 ALT2.ASPMX.L.GOOGLE.com.
+[carlos@multi ~]$ host 192.30.252.130
+130.252.30.192.in-addr.arpa domain name pointer ip1c-lb3-prd.iad.github.com.
+[carlos@multi ~]$ 
+</code></pre>
 </div>
 
 
@@ -124,15 +225,21 @@
   
 
 
-<time datetime="2010-03-02T00:00:00+08:00" pubdate data-updated="true">Mar 2<span>nd</span>, 2010</time>
+<time datetime="2013-10-18T03:18:00+08:00" pubdate data-updated="true">Oct 18<span>th</span>, 2013</time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/dns/'>dns</a>, <a class='category' href='/blog/categories/note-to-self/'>note-to-self</a>
+  
+</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.carloslima.name/2010/03/rsnapshot-style-backups-on-dreamhost.html" data-via="" data-counturl="http://blog.carloslima.name/2010/03/rsnapshot-style-backups-on-dreamhost.html" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.carloslima.name/blog/2013/10/18/dns-and-ptr-records-quick-notes/" data-via="" data-counturl="http://blog.carloslima.name/blog/2013/10/18/dns-and-ptr-records-quick-notes/" >Tweet</a>
   
   
   
@@ -141,10 +248,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/2010/02/hosting-your-git-repository-on.html" title="Previous Post: Hosting your GIT repository on DreamHost">&laquo; Hosting your GIT repository on DreamHost</a>
+        <a class="basic-alignment left" href="/blog/2013/10/16/git-submodules-how-not-to-use-it/" title="Previous Post: git submodules: how (not) to use it.">&laquo; git submodules: how (not) to use it.</a>
       
-      
-        <a class="basic-alignment right" href="/2010/03/solutionatic-pair-programming.html" title="Next Post: Solutionatic Pair Programming">Solutionatic Pair Programming &raquo;</a>
       
     </p>
   </footer>
@@ -239,8 +344,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.carloslima.name/2010/03/rsnapshot-style-backups-on-dreamhost.html';
-        var disqus_url = 'http://blog.carloslima.name/2010/03/rsnapshot-style-backups-on-dreamhost.html';
+        var disqus_identifier = 'http://blog.carloslima.name/blog/2013/10/18/dns-and-ptr-records-quick-notes/';
+        var disqus_url = 'http://blog.carloslima.name/blog/2013/10/18/dns-and-ptr-records-quick-notes/';
         var disqus_script = 'embed.js';
       
     (function () {
