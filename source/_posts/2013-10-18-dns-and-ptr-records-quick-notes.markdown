@@ -14,7 +14,9 @@ As example, lets pick github's IP.
     [carlos@multi ~]$ host github.com
     github.com has address 192.30.252.129
 
-The reverse dns entry for that is: `129.252.30.192.in-addr.arpa`  
+The key thing to remember is that it is the same as forward dns, just on a "funny" zone name.
+
+In our example, the reverse dns record is: `129.252.30.192.in-addr.arpa`  
 (and the zone `252.30.192.in-addr.arpa`)
 
 ## Find the authority over that zone:
