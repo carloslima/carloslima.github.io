@@ -2,7 +2,7 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://blog.carloslima.name/2010/02/hosting-your-git-repository-on.html</loc>
-        <lastmod>2013-10-15T01:44:28+08:00</lastmod>
+        <lastmod>2013-10-19T18:30:21+08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.carloslima.name/2010/03/rsnapshot-style-backups-on-dreamhost.html</loc>
@@ -14,7 +14,7 @@
     </url>
     <url>
         <loc>http://blog.carloslima.name/2010/03/methodmissing-and-respondto-doing-it.html</loc>
-        <lastmod>2013-10-15T01:44:28+08:00</lastmod>
+        <lastmod>2013-10-19T19:08:00+08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.carloslima.name/blog/2013/10/16/git-submodules-how-not-to-use-it/</loc>
@@ -26,7 +26,7 @@
     </url>
     <url>
         <loc>http://blog.carloslima.name/</loc>
-        <lastmod>2013-10-18T03:59:58+08:00</lastmod>
+        <lastmod>2013-10-19T19:08:00+08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.carloslima.name/robots.txt</loc>
@@ -34,6 +34,6 @@
     </url>
     <url>
         <loc>http://blog.carloslima.name/blog/archives/</loc>
-        <lastmod>2013-10-18T03:59:58+08:00</lastmod>
+        <lastmod>2013-10-19T19:08:00+08:00</lastmod>
     </url>
 </urlset>

@@ -9,7 +9,8 @@
   <meta name="author" content="Carlos Lima">
 
   
-  <meta name="description" content="GIT on DreamHostA few weeks ago I needed a private remote Git repository.Since I already have a DreamHost account, I didn&#8217;t want to pay for &hellip;">
+  <meta name="description" content="A few weeks ago I needed a private remote Git repository.
+Since I already have a DreamHost account, I didn&rsquo;t want to pay for GitHub just to be &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -100,8 +101,196 @@
   </header>
 
 
-<div class="entry-content"><div class='post'>
-<h1>GIT on DreamHost</h1>A few weeks ago I needed a private remote <a href="http://git-scm.com/">Git</a> repository.<br />Since I already have a <a href="http://www.dreamhost.com/">DreamHost</a> account, I didn&#8217;t want to pay for <a href="http://github.com/">GitHub</a> just to be able to set my repository as private.<br /><br />DreamHost does not officially support Git on their Web Panel, so you must set things up manually.<br /><br />There is a <a href="http://wiki.dreamhost.com/Git">Git entry on their Wiki</a> but it looked a bit messy, so I decided to write a cleaner tutorial.<br /><br />Keep in mind that I&#8217;m using <a href="http://www.kernel.org/pub/software/scm/git/docs/howto/setup-git-server-over-http.txt">WebDAV</a>.<br />It allows more than one user to push to the same repository, but it&#8217;s also slower.<br /><br /><blockquote>You can use SSH but it&#8217;s a lot more complex to setup.<br />If that&#8217;s what you want, read the <a href="http://wiki.dreamhost.com/Git#Setup_Three">DreamHost Wiki</a>.</blockquote><br /><h2>Setup a WebDAV folder</h2><br />Login to <a href="https://panel.dreamhost.com/">DreamHost Web Panel</a><br />Go to <a href="https://panel.dreamhost.com/index.cgi?tree=goodies.webdav">Goodies -&gt; Htaccess/WebDAV</a><br />Select the domain name you want to use<br />Click &#8220;Set Up A New Directory&#8221;<br /><br /><div class="separator" style="clear: both; text-align: center;"><a href="http://1.bp.blogspot.com/_pF4K13ZAfbQ/S4Yfy5jNCfI/AAAAAAAAAXY/Vqd9oGuy0fE/s1600-h/DH+Webpanel_.png" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"><img border="0" height="400" src="http://1.bp.blogspot.com/_pF4K13ZAfbQ/S4Yfy5jNCfI/AAAAAAAAAXY/Vqd9oGuy0fE/s400/DH+Webpanel_.png" width="380" /></a></div><div style="clear: left;"></div><br /><h2>Create the remote repository</h2><br />Git cannot create the remote repository, it only operates on existing ones, so we need to create an empty repository locally and manually upload it to DreamHost.<br /><br />So, there we go, open a console and..<br /><br /><code><br />carlos@ubuntu:~/dev$ <span class="bright">mkdir blank.git</span><br />carlos@ubuntu:~/dev$ <span class="bright">cd blank.git/</span><br />carlos@ubuntu:~/dev/blank.git$ <span class="bright">git --bare init</span><br />Initialized empty Git repository in /home/carlos/dev/blank.git/<br />carlos@ubuntu:~/dev/blank.git$ <span class="bright">touch git-daemon-export-ok</span><br />carlos@ubuntu:~/dev/blank.git$ <span class="bright">git --bare update-server-info</span><br />carlos@ubuntu:~/dev/blank.git$ <span class="bright">mv hooks/post-update.sample hooks/post-update</span><br />carlos@ubuntu:~/dev/blank.git$<br /></code><br /><br /><h3>Upload the blank repository and rename it</h3><br />Use Nautilus or any other file manager that supports WebDAV to upload blank.git to Dreamhost and rename it to something meaningful. For the purpose of this example, let&#8217;s call it project.git<br /><br />On Ubuntu:<br /><a href="http://1.bp.blogspot.com/_pF4K13ZAfbQ/S4YgZnD29DI/AAAAAAAAAXg/Z0EGxSx4f38/s1600-h/Places-Connect.png" imageanchor="1"><img border="0" src="http://1.bp.blogspot.com/_pF4K13ZAfbQ/S4YgZnD29DI/AAAAAAAAAXg/Z0EGxSx4f38/s320/Places-Connect.png" /></a><br /><br /><a href="http://3.bp.blogspot.com/_pF4K13ZAfbQ/S4Ygd4NfomI/AAAAAAAAAXo/nkqv0FMXgow/s1600-h/Screenshot-Connect+to+Server.png" imageanchor="1"><img border="0" src="http://3.bp.blogspot.com/_pF4K13ZAfbQ/S4Ygd4NfomI/AAAAAAAAAXo/nkqv0FMXgow/s320/Screenshot-Connect+to+Server.png" /></a><br /><br /><a href="http://4.bp.blogspot.com/_pF4K13ZAfbQ/S4YtU_dAeqI/AAAAAAAAAXw/-Ki88LByn2k/s1600-h/copy_files.png" imageanchor="1"><img border="0" src="http://4.bp.blogspot.com/_pF4K13ZAfbQ/S4YtU_dAeqI/AAAAAAAAAXw/-Ki88LByn2k/s320/copy_files.png" /></a><br /><br /><a href="http://2.bp.blogspot.com/_pF4K13ZAfbQ/S4YtZGj9uoI/AAAAAAAAAX4/H2S4t9YeXzA/s1600-h/copy_files2.png" imageanchor="1"><img border="0" src="http://2.bp.blogspot.com/_pF4K13ZAfbQ/S4YtZGj9uoI/AAAAAAAAAX4/H2S4t9YeXzA/s320/copy_files2.png" /></a><br /><div style="clear: left;"></div><br />After it finishes uploading, rename the folder from blank.git to project.git<br /><br /><blockquote>When I renamed the file, I got an error message saying it failed, but refreshing showed it actually worked.</blockquote><br /><h2>Ready!</h2><br />If you&#8217;re starting fresh and all you need is a blank repository, then you&#8217;re set. <br />Just clone your repository and start working!<br /><br /><code><br />carlos@ubuntu:~/dev$ <span class="bright">git clone http://bob@www.example.com/git/project.git</span><br />Initialized empty Git repository in /home/carlos/dev/project/.git/<br />Password: <br />warning: You appear to have cloned an empty repository.<br />carlos@ubuntu:~/dev$ <span class="bright">cd project</span><br />carlos@ubuntu:~/dev/project$ (work, work, work)<br />carlos@ubuntu:~/dev/project$ <span class="bright">git add README</span><br />carlos@ubuntu:~/dev/project$ <span class="bright">git commit -m "your commit message"</span><br />[master (root-commit) 5bbe5f6] your commit message<br />0 files changed, 0 insertions(+), 0 deletions(-)<br />create mode 100644 README<br />carlos@ubuntu:~/dev/project$ <span class="bright">git push origin master</span><br />Password: <br />Fetching remote heads...<br />refs/<br />refs/tags/<br />refs/heads/<br />updating 'refs/heads/master'<br />from 0000000000000000000000000000000000000000<br />to   5bbe5f6507fa39293bdc9674ca4ae2e0a1d2f15e<br />sending 3 objects<br />done<br />Updating remote server info<br />carlos@ubuntu:~/dev/project$ <span class="bright">git pull</span><br />Password: <br />From http://bob@www.example.com/git/project<br />* [new branch]      master     -&gt; origin/master<br />Already up-to-date.<br />carlos@ubuntu:~/dev/project (master)$<br /></code><br /><br /><h2>Optional: Push your project repository to DreamHost</h2><br />Otherwise, if you already have a project repository that you&#8217;ve been working locally, now is the time to push it to DreamHost.<br /><br />Instead of cloning the new repository, push your project there first:<br /><br /><code><br />carlos@ubuntu:~/dev$ <span class="bright">cd real_project/</span><br />carlos@ubuntu:~/dev/real_project$ <span class="bright">git config remote.upload.url http://bob@www.example.com/git/project.git/</span><br /><span class="note"><br />It is important to put the last '/'; Without it, the server will send a redirect which git-http-push does not (yet) understand, and git-http-push will repeat the request infinitely.<br /></span><br /><br />carlos@ubuntu:~/dev/real_project$ <span class="bright">git push upload master</span><br />Password: <br />Fetching remote heads...<br />refs/<br />refs/tags/<br />refs/heads/<br />updating 'refs/heads/master'<br />from 0000000000000000000000000000000000000000<br />to   a10703d8e400ca9df1b19345975718935c083905<br />sending 107 objects<br />done<br />Updating remote server info<br />carlos@ubuntu:~/dev/real_project$<br /></code><br /><br />Then confirm it worked and start fresh by cloning it.<br /><br /><code><br />carlos@ubuntu:~/dev/real_project$ <span class="bright">cd ..</span><br />carlos@ubuntu:~/dev$ <span class="bright">git clone http://bob@www.example.com/git/project.git/</span><br />Initialized empty Git repository in /home/carlos/dev/project/.git/<br />Password: <br />got a10703d8e400ca9df1b19345975718935c083905<br />walk a10703d8e400ca9df1b19345975718935c083905<br />got 574596c4cc435461515aa1a4c3cdd0e93af947f3<br />got 067f993be7432ac27e8a6e9636dea53dcc3d8632<br />got 475be0881778acd2de7404175fa323823e4d1ac0<br />walk 067f993be7432ac27e8a6e9636dea53dcc3d8632<br />(...)<br />got b7b5d32db9dd30c9ea28434b125781eb4a3e95b2<br />carlos@ubuntu:~/dev$ <span class="bright">cd project/</span><br />carlos@ubuntu:~/dev/project$ <span class="bright">git log --oneline</span><br />a10703d Adds a beautiful whitespace! :)<br />067f993 Adds project description.. or sort of<br />80c2e22 removes rerun.txt<br />07e3cd2 Initial commit<br />carlos@ubuntu:~/dev/project$ <span class="bright">git pull</span><br />Password: <br />Already up-to-date.<br />carlos@ubuntu:~/dev/project$ <span class="bright">git push origin master</span><br />Password: <br />Fetching remote heads...<br />refs/<br />refs/tags/<br />refs/heads/<br />'refs/heads/master': up-to-date<br />carlos@ubuntu:~/dev/project$ <br /></code><br /><br />And you&#8217;re good to resume working on your project :)<br /><br /><h2>Bonus: saving your WebDAV password</h2><br />Now, if you&#8217;re thinking that typing the WebDAV password over and over again kind of suck, you can save it so that git won&#8217;t ask you anymore.<br /><br /><code>carlos@ubuntu:~/dev$ <span class="bright">echo "machine www.example.com login bob password secret" &gt;&gt; ~/.netrc</span></code><br /><br />There is only one thing to keep in mind.<br />When you save your password like this, you need to drop the <br /><pre style="display: inline;">bob@  </pre>from the urls.<br />So, instead of referring to your repository as <br /><pre>http://bob@www.example.com/git/project.git/</pre>you need to use just <br /><pre>http://www.example.com/git/project.git/</pre><br />If you do this after you finished everything and cloned your repository, then git will have already saved the &#8220;wrong&#8221; url into its config file and will keep asking you for the password.<br /><br />To fix this you can either clone again using the correct url or fix git&#8217;s config manually by doing:<br /><code><br />carlos@ubuntu:~/dev/project$ <span class="bright">git config remote.origin.url http://www.example.com/git/project.git/</span><br />carlos@ubuntu:~/dev/project$<br /></code><br /><br /><br />Now, just for reference :)<br /><code><br />carlos@ubuntu:~/dev$ more /etc/issue.net <br />Ubuntu 9.10<br />carlos@ubuntu:~/dev$ git --version<br />git version 1.6.3.3<br />carlos@ubuntu:~/dev$ date<br />Thu Feb 25 08:55:18 BRT 2010<br />carlos@ubuntu:~/dev$<br /></code></div>
+<div class="entry-content"><p>A few weeks ago I needed a private remote <a href="http://git-scm.com">Git</a> repository.<br/>
+Since I already have a <a href="http://www.dreamhost.com">DreamHost</a> account, I didn&rsquo;t want to pay for <a href="http://github.com">GitHub</a> just to be able to set my repository as private.</p>
+
+<p>DreamHost does not officially support Git on their Web Panel, so you must set things up manually.</p>
+
+<p>There is a <a href="http://wiki.dreamhost.com/Git">Git entry on their Wiki</a> but it looked a bit messy, so I decided to write a cleaner tutorial.</p>
+
+<p>Keep in mind that I&rsquo;m using <a href="http://www.kernel.org/pub/software/scm/git/docs/howto/setup-git-server-over-http.txt">WebDAV</a>.<br/>
+It allows more than one user to push to the same repository, but it&rsquo;s also slower.</p>
+
+<blockquote><p>You can use SSH but it&rsquo;s a lot more complex to setup.<br>
+If that&rsquo;s what you want, read the <a href="http://wiki.dreamhost.com/Git#Setup_Three">DreamHost Wiki</a>.</p></blockquote>
+
+<h2>Setup a WebDAV folder</h2>
+
+<p>Login to <a href="https://panel.dreamhost.com/">DreamHost Web Panel</a><br/>
+Go to <a href="https://panel.dreamhost.com/index.cgi?tree=goodies.webdav">Goodies &ndash;&gt; Htaccess/WebDAV</a><br/>
+Select the domain name you want to use<br/>
+Click &ldquo;Set Up A New Directory&rdquo;</p>
+
+<p><img src="/images/hosting-your-git-repository-on-dreamhost/dh-webpanel.png" alt="DH Panel/WebDAV" /></p>
+
+<h2>Create the remote repository</h2>
+
+<p>Git cannot create the remote repository, it only operates on existing ones, so we need to create an empty repository locally and
+manually upload it to DreamHost.</p>
+
+<p>So, there we go, open a console and..</p>
+
+<pre><code>carlos@ubuntu:~/dev$ mkdir blank.git
+carlos@ubuntu:~/dev$ cd blank.git/
+carlos@ubuntu:~/dev/blank.git$ git --bare init
+Initialized empty Git repository in /home/carlos/dev/blank.git/
+carlos@ubuntu:~/dev/blank.git$ touch git-daemon-export-ok
+carlos@ubuntu:~/dev/blank.git$ git --bare update-server-info
+carlos@ubuntu:~/dev/blank.git$ mv hooks/post-update.sample hooks/post-update
+carlos@ubuntu:~/dev/blank.git$
+</code></pre>
+
+<h3>Upload the blank repository and rename it</h3>
+
+<p>Use Nautilus or any other file manager that supports WebDAV to upload blank.git to Dreamhost and rename it to something
+meaningful. For the purpose of this example, let&rsquo;s call it project.git</p>
+
+<p>On Ubuntu:</p>
+
+<p><img src="/images/hosting-your-git-repository-on-dreamhost/places-connect.png" alt="Places-&gt;Connect" /><br/>
+<img src="/images/hosting-your-git-repository-on-dreamhost/connect-to-server.png" alt="Places-&gt;Connect" /><br/>
+<img src="/images/hosting-your-git-repository-on-dreamhost/copy-files.png" alt="Places-&gt;Connect" /><br/>
+<img src="/images/hosting-your-git-repository-on-dreamhost/copy-files2.png" alt="Places-&gt;Connect" /></p>
+
+<p>After it finishes uploading, rename the folder from blank.git to project.git</p>
+
+<blockquote><p>When I renamed the file, I got an error message saying it failed, but refreshing showed it actually worked.</p></blockquote>
+
+<h2>Ready!</h2>
+
+<p>If you&rsquo;re starting fresh and all you need is a blank repository, then you&rsquo;re set.<br/>
+Just clone your repository and start working!</p>
+
+<pre><code>carlos@ubuntu:~/dev$ git clone http://bob@www.example.com/git/project.git
+Initialized empty Git repository in /home/carlos/dev/project/.git/
+Password:
+warning: You appear to have cloned an empty repository.
+
+carlos@ubuntu:~/dev$ cd project
+carlos@ubuntu:~/dev/project$ (work, work, work)
+carlos@ubuntu:~/dev/project$ git add README
+carlos@ubuntu:~/dev/project$ git commit -m "your commit message"
+[master (root-commit) 5bbe5f6] your commit message
+0 files changed, 0 insertions(+), 0 deletions(-)
+create mode 100644 README
+carlos@ubuntu:~/dev/project$ git push origin master
+Password:
+Fetching remote heads...
+refs/
+refs/tags/
+refs/heads/
+updating 'refs/heads/master'
+from 0000000000000000000000000000000000000000
+to 5bbe5f6507fa39293bdc9674ca4ae2e0a1d2f15e
+sending 3 objects
+done
+Updating remote server info
+
+carlos@ubuntu:~/dev/project$ git pull
+Password:
+From http://bob@www.example.com/git/project
+* [new branch] master -&amp;gt; origin/master
+Already up-to-date.
+carlos@ubuntu:~/dev/project (master)$
+</code></pre>
+
+<h2>Optional: Push your project repository to DreamHost</h2>
+
+<p>Otherwise, if you already have a project repository that you&rsquo;ve been working locally, now is the time to push it to
+DreamHost.</p>
+
+<p>Instead of cloning the new repository, push your project there first:</p>
+
+<pre><code>carlos@ubuntu:~/dev$ cd real_project/
+carlos@ubuntu:~/dev/real_project$ git config remote.upload.url http://bob@www.example.com/git/project.git/
+
+  # It is important to put the last '/'; Without it, the server will send a redirect which git-http-push
+  # does not (yet) understand, and git-http-push will repeat the request infinitely.
+
+carlos@ubuntu:~/dev/real_project$ git push upload master
+Password:
+Fetching remote heads...
+refs/
+refs/tags/
+refs/heads/
+updating 'refs/heads/master'
+from 0000000000000000000000000000000000000000
+to a10703d8e400ca9df1b19345975718935c083905
+sending 107 objects
+done
+Updating remote server info
+carlos@ubuntu:~/dev/real_project$
+</code></pre>
+
+<p>Then confirm it worked and start fresh by cloning it.</p>
+
+<pre><code>carlos@ubuntu:~/dev/real_project$ cd ..
+carlos@ubuntu:~/dev$ git clone http://bob@www.example.com/git/project.git/
+Initialized empty Git repository in /home/carlos/dev/project/.git/
+Password:
+got a10703d8e400ca9df1b19345975718935c083905
+walk a10703d8e400ca9df1b19345975718935c083905
+got 574596c4cc435461515aa1a4c3cdd0e93af947f3
+got 067f993be7432ac27e8a6e9636dea53dcc3d8632
+got 475be0881778acd2de7404175fa323823e4d1ac0
+walk 067f993be7432ac27e8a6e9636dea53dcc3d8632
+(...)
+got b7b5d32db9dd30c9ea28434b125781eb4a3e95b2
+
+carlos@ubuntu:~/dev$ cd project/
+carlos@ubuntu:~/dev/project$ git log --oneline
+a10703d Adds a beautiful whitespace! :)
+067f993 Adds project description.. or sort of
+80c2e22 removes rerun.txt
+07e3cd2 Initial commit
+
+carlos@ubuntu:~/dev/project$ git pull
+Password:
+Already up-to-date.
+
+carlos@ubuntu:~/dev/project$ git push origin master
+Password:
+Fetching remote heads...
+refs/
+refs/tags/
+refs/heads/
+'refs/heads/master': up-to-date
+carlos@ubuntu:~/dev/project$
+</code></pre>
+
+<p>And you&rsquo;re good to resume working on your project :)</p>
+
+<h2>Bonus: saving your WebDAV password</h2>
+
+<p>Now, if you&rsquo;re thinking that typing the WebDAV password over and over again kind of suck, you can save it so that git won&rsquo;t ask
+you anymore.</p>
+
+<pre><code>carlos@ubuntu:~/dev$ echo "machine www.example.com login bob password secret" &gt;&gt; ~/.netrc
+</code></pre>
+
+<p>There is only one thing to keep in mind.
+When you save your password like this, you need to drop the <code>bob@</code>
+from the urls.<br/>
+So, instead of referring to your repository as <code>http://bob@www.example.com/git/project.git/</code> you need to use just <code>http://www.example.com/git/project.git/</code><br/>
+If you do this after you finished everything and cloned your repository, then git will have already saved the &ldquo;wrong&rdquo; url into
+its config file and will keep asking you for the password.</p>
+
+<p>To fix this you can either clone again using the correct url or fix git&rsquo;s config manually by doing:</p>
+
+<pre><code>carlos@ubuntu:~/dev/project$ git config remote.origin.url http://www.example.com/git/project.git/
+carlos@ubuntu:~/dev/project$
+</code></pre>
+
+<p>Now, just for reference :)</p>
+
+<pre><code>carlos@ubuntu:~/dev$ more /etc/issue.net
+Ubuntu 9.10
+carlos@ubuntu:~/dev$ git --version
+git version 1.6.3.3
+carlos@ubuntu:~/dev$ date
+Thu Feb 25 08:55:18 BRT 2010
+carlos@ubuntu:~/dev$
+</code></pre>
 </div>
 
 
