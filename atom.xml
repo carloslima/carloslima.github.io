@@ -4,7 +4,7 @@
   <title><![CDATA[carlos@blog ~/notes>]]></title>
   <link href="http://blog.carloslima.name/atom.xml" rel="self"/>
   <link href="http://blog.carloslima.name/"/>
-  <updated>2013-11-05T02:18:07+08:00</updated>
+  <updated>2013-11-05T02:20:16+08:00</updated>
   <id>http://blog.carloslima.name/</id>
   <author>
     <name><![CDATA[Carlos Lima]]></name>
@@ -189,36 +189,6 @@ my %args = @ARGV;
 <p>So, go crazy and drop me a hello on the comments bellow if this post was somehow helpful.</p>
 
 <p>Cheers!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Running Perl Workers on Iron.IO]]></title>
-    <link href="http://blog.carloslima.name/blog/2013/11/05/readme/"/>
-    <updated>2013-11-05T00:37:00+08:00</updated>
-    <id>http://blog.carloslima.name/blog/2013/11/05/readme</id>
-    <content type="html"><![CDATA[<h1>Perl on IronWorker</h1>
-
-<p>This is a working example of running perl on IronWorker.</p>
-
-<p>For the full explanation, check the blog post <a href="http://blog.carloslima.name/blog/2013/11/05/running-perl-workers-on-iron-dot-io/">Running Perl Workers on Iron.IO</a></p>
-
-<h1>Get me up and running, fast.</h1>
-
-<p>Login to <a href="https://hud.iron.io/dashboard,">https://hud.iron.io/dashboard,</a> download <code>iron.json</code> credential file (the &lsquo;key&rsquo; icon)</p>
-
-<pre><code>gem install iron_worker_ng
-# rbenv rehash (if you're using rbenv)
-cpanm Carton
-git clone https://github.com/carloslima/iron-play
-cd iron-play
-carton install
-iron_worker upload iron-pl.worker
-iron_worker queue iron-pl -p '{"tags":["iron.io","perl"]}'
-iron_worker log &lt;id from previous command output&gt;
-</code></pre>
-
-<p>Have a beer. \o/</p>
 ]]></content>
   </entry>
   

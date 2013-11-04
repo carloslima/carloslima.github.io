@@ -286,63 +286,6 @@ my %args = @ARGV;
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/11/05/readme/">Running Perl Workers on Iron.IO</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-05T00:37:00+08:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>Perl on IronWorker</h1>
-
-<p>This is a working example of running perl on IronWorker.</p>
-
-<p>For the full explanation, check the blog post <a href="http://blog.carloslima.name/blog/2013/11/05/running-perl-workers-on-iron-dot-io/">Running Perl Workers on Iron.IO</a></p>
-
-<h1>Get me up and running, fast.</h1>
-
-<p>Login to <a href="https://hud.iron.io/dashboard,">https://hud.iron.io/dashboard,</a> download <code>iron.json</code> credential file (the &lsquo;key&rsquo; icon)</p>
-
-<pre><code>gem install iron_worker_ng
-# rbenv rehash (if you're using rbenv)
-cpanm Carton
-git clone https://github.com/carloslima/iron-play
-cd iron-play
-carton install
-iron_worker upload iron-pl.worker
-iron_worker queue iron-pl -p '{"tags":["iron.io","perl"]}'
-iron_worker log &lt;id from previous command output&gt;
-</code></pre>
-
-<p>Have a beer. \o/</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
       <h1 class="entry-title"><a href="/blog/2013/10/18/dns-and-ptr-records-quick-notes/">Dns and Ptr Records Quick Notes</a></h1>
     
     
@@ -1246,10 +1189,6 @@ carlos@ubuntu:~/dev$
       </li>
     
       <li class="post">
-        <a href="/blog/2013/11/05/readme/">Running Perl Workers on Iron.IO</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2013/10/18/dns-and-ptr-records-quick-notes/">Dns and Ptr Records Quick Notes</a>
       </li>
     
@@ -1259,6 +1198,10 @@ carlos@ubuntu:~/dev$
     
       <li class="post">
         <a href="/2010/03/methodmissing-and-respondto-doing-it.html">Method_missing and Respond_to?: Doing It Properly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/03/solutionatic-pair-programming.html">Solutionatic Pair Programming</a>
       </li>
     
   </ul>
