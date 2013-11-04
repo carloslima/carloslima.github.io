@@ -168,4 +168,4 @@ To be useful it would need to be automatically triggered by some event and produ
 
 So, go crazy and drop me a hello on the comments bellow if this post was somehow helpful.
 
-Cheers!
+Cheers! \o/
