@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Running Perl Workers on Iron.IO - carlos@blog ~/notes></title>
+  <meta name="author" content="Carlos Lima">
+
+  
+  <meta name="description" content="Despite not being listed as an option on their documentation, it is possible to run perl on their IronWorker service. TL;DR (or Show Me The Code): &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.carloslima.name/blog/2013/11/05/running-perl-workers-on-iron-dot-io">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="carlos@blog ~/notes>" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-44955327-1', 'carloslima.name');
+    ga('send', 'pageview');
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">carlos@blog ~/notes></a></h1>
+  
+    <h2>\o/</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.carloslima.name" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Running Perl Workers on Iron.IO</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-05T00:37:00+08:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Despite not being listed as an option on their documentation, it is possible to run <a href="http://www.perl.org/">perl</a> on their <a href="http://www.iron.io/worker">IronWorker</a> service.</p>
+
+<blockquote><p>TL;DR (or Show Me The Code): <a href="https://github.com/carloslima/iron-play">working example, full sources</a>.</p></blockquote>
+
+<h1>Quick start</h1>
+
+<h2>IronWorkerNG (their upload/management tool)</h2>
+
+<p>We will need their management tool to upload code.</p>
+
+<pre><code>gem install iron_worker_ng
+</code></pre>
+
+<h2>The credentials</h2>
+
+<p>IronWorkerNG reads the credentials from a file named <code>iron.json</code>.<br/>
+To get it, we need to login to <a href="https://hud.iron.io/dashboard,">https://hud.iron.io/dashboard,</a> click on the key-icon and download <code>iron.json</code> to the root directory of the project.</p>
+
+<h2>Resolving dependencies on CPAN modules</h2>
+
+<p>Iron.IO doesn&rsquo;t come with any perl module other than what is in <a href="http://perldoc.perl.org/5.14.2/index-modules-A.html">core</a>, so we need to bring in all our dependencies.</p>
+
+<p>For that we will use <a href="https://metacpan.org/pod/Carton">Carton</a></p>
+
+<pre><code>$ cpanm -nq Carton   # install carton
+</code></pre>
+
+<p>add our dependencies to <code>cpanfile</code></p>
+
+<pre><code>$ cat cpanfile
+requires 'Data::Printer';
+requires 'File::Slurp';
+requires 'Mojolicious';
+</code></pre>
+
+<p>and install them to a ./local/ directory</p>
+
+<pre><code>$ carton install
+</code></pre>
+
+<h2>Seting up the worker</h2>
+
+<p>The configuration for the worker is defined in a <code>&lt;service&gt;.worker</code> file, so we create a simple one that tells it to run our perl script and to upload our dependencies (generated by Carton, above) together with the code.</p>
+
+<pre><code>$ cat iron-pl.worker
+runtime 'perl'
+exec 'iron-pl.pl'
+dir 'local/lib/perl5'
+</code></pre>
+
+<p>This will upload our code together with the <code>./local/lib/perl5</code> directory (as <code>./perl5</code> on their system)</p>
+
+<p>For more information, check the <a href="http://dev.iron.io/worker/reference/dotworker/">.worker documentation</a>.</p>
+
+<h2>Writing the code!</h2>
+
+<p>This is what will be run when you schedule some tasks.<br/>
+We can go crazy on that one, but here I&rsquo;d like to highlight just a few things:</p>
+
+<pre><code>#!/usr/bin/env perl
+use 5.010; use utf8; use strict; use warnings;
+(...)
+
+use lib 'perl5';
+</code></pre>
+
+<p>We need to load the dependencies from the local directory, thus the <code>use lib</code> above.</p>
+
+<pre><code>(...)
+my %args = @ARGV;
+</code></pre>
+
+<p>They pass arguments as <code>('-d', '/task/', '-e', 'production', '-id', '5277ca9ed16f93360109d0aa', '-payload', '/task/task_payload.json')</code> so we can load them as a Hash and access it as <code>$args{-d}</code> :&ndash;)</p>
+
+<p>The data passed from the scheduled task to the worker comes in a <code>.json</code> file, so we need to parse that</p>
+
+<pre><code>my $payload = Mojo::JSON-&gt;new-&gt;decode( read_file($args{-payload}) );
+</code></pre>
+
+<p>For more info (and executable code), check the <a href="https://github.com/carloslima/iron-play">full sources</a> on github.</p>
+
+<h2>Deploy</h2>
+
+<p>With all pieces ready, we can upload the code to their platform using their management tool.</p>
+
+<pre><code>$ iron_worker upload iron-pl.worker
+    ------&gt; Creating client
+            Project 'ironing-board' with id='5277a2b987a3b90005000044'
+    ------&gt; Creating code package
+            Found workerfile with path='iron-pl.worker'
+            Detected exec with path='iron-pl.pl' and args='{}'
+            Merging dir with path='local/lib/perl5' and dest=''
+            Code package name is 'iron-pl'
+    ------&gt; Uploading code package 'iron-pl'
+            Code package uploaded with id='5277af07c7abc62bd5098755' and revision='4'
+            Check 'https://hud.iron.io/tq/projects/5277a2b987a3b90005000044/code/5277af07c7abc62bd5098755' for more info
+</code></pre>
+
+<h2>Add tasks to the queue</h2>
+
+<pre><code>$ iron_worker queue iron-pl -p '{"tags":["iron.io","perl"]}'
+    ------&gt; Creating client
+            Project 'ironing-board' with id='5277a2b987a3b90005000044'
+    ------&gt; Queueing task
+            Code package 'iron-pl' queued with id='5277ca9ed16f93360109d0aa'
+            Check 'https://hud.iron.io/tq/projects/5277a2b987a3b90005000044/jobs/5277ca9ed16f93360109d0aa' for more info
+</code></pre>
+
+<h2>Check results</h2>
+
+<p>We can either go straight to the web interface using the url listed above or use their management tool:</p>
+
+<pre><code>    $ iron_worker log 5277ca9ed16f93360109d0aa
+    ------&gt; Creating client
+            Project 'ironing-board' with id='5277a2b987a3b90005000044'
+    ------&gt; Getting log for task with id='5277ca9ed16f93360109d0aa'
+    Iron-Play v0.0.1
+    2013-11-04T16:26:10
+    Environment: {
+        HOME              "/task",
+        LANG              "en_US.UTF-8",
+        LD_LIBRARY_PATH   ".:./lib:./__debs__/usr/lib:./__debs__/usr/lib/x86_64-linux-gnu:./__debs__/lib:./__debs__/lib/x86_64-linux-gnu",
+        LOGNAME           "nobody",
+        MAIL              "/var/mail/nobody",
+        OLDPWD            "/task",
+        PATH              ".:./bin:./__debs__/usr/bin:./__debs__/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games",
+        PWD               "/task",
+        SHELL             "/bin/sh",
+        SUDO_COMMAND      "/usr/bin/ruby run.rb --sleep 60 -e production -n 1 -j /mnt/iron-jail",
+        SUDO_GID          1000,
+        SUDO_UID          1000,
+        SUDO_USER         "ubuntu",
+        TERM              "unknown",
+        USER              "nobody",
+        USERNAME          "root"
+    }
+    Arguments: {
+        -d         "/task/",
+        -e         "production",
+        -id        "5277ca9ed16f93360109d0aa",
+        -payload   "/task/task_payload.json"
+    }
+    Payload (/task/task_payload.json): \ {
+        tags   [
+            [0] "iron.io",
+            [1] "perl"
+        ]
+    }
+
+    Top users for tag 'iron.io':
+    AnaelFavre: 417
+    thousandsofthem: 446
+    Travis R: 6935
+
+    Top users for tag 'perl':
+    ikegami: 106098
+    mpapec: 10324
+    TLP: 40585
+
+    Done.
+</code></pre>
+
+<h2>But, but..</h2>
+
+<p>Of course, this example is not very useful, manually scheduling tasks and getting results from calling <code>iron_worker log &lt;id&gt;</code> is not really something interesting :&ndash;)</p>
+
+<p>To be useful it would need to be automatically triggered by some event and produce usable results (updating a databse, notifying another service, etc..) but I assume you already know this if you&rsquo;re searching for how to run perl on IronWorker.</p>
+
+<p>So, go crazy and drop me a hello on the comments bellow if this post was somehow helpful.</p>
+
+<p>Cheers!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Carlos Lima</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-05T00:37:00+08:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/iron-dot-io/'>iron.io</a>, <a class='category' href='/blog/categories/perl/'>perl</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.carloslima.name/blog/2013/11/05/running-perl-workers-on-iron-dot-io/" data-via="" data-counturl="http://blog.carloslima.name/blog/2013/11/05/running-perl-workers-on-iron-dot-io/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/11/05/readme/" title="Previous Post: Running Perl Workers on Iron.IO">&laquo; Running Perl Workers on Iron.IO</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/05/running-perl-workers-on-iron-dot-io/">Running Perl Workers on Iron.IO</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/05/readme/">Running Perl Workers on Iron.IO</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/18/dns-and-ptr-records-quick-notes/">Dns and Ptr Records Quick Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/16/git-submodules-how-not-to-use-it/">Git Submodules: How (Not) to Use It.</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/03/methodmissing-and-respondto-doing-it.html">Method_missing and Respond_to?: Doing It Properly</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/carloslima">@carloslima</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'carloslima',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Carlos Lima -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'endlessramblings';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.carloslima.name/blog/2013/11/05/running-perl-workers-on-iron-dot-io/';
+        var disqus_url = 'http://blog.carloslima.name/blog/2013/11/05/running-perl-workers-on-iron-dot-io/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
