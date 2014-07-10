@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>dns and ptr records quick notes - carlos@blog ~/notes></title>
+  <title>Talk: Feedback - carlos@blog ~/notes></title>
   <meta name="author" content="Carlos Lima">
 
   
-  <meta name="description" content="Every once in a blue moon I get to troubleshoot, help someone with or explain how reverse dns works but somehow it keeps getting misplaced inside my &hellip;">
+  <meta name="description" content="This is a talk I gave at work. It&rsquo;s the second time I give a similar talk so I&rsquo;ve decided to post it up. Unfortunately I have no slides &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.carloslima.name/blog/2013/10/18/dns-and-ptr-records-quick-notes">
+  <link rel="canonical" href="http://blog.carloslima.name/blog/2014/07/08/talk-feedback">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="carlos@blog ~/notes>" type="application/atom+xml">
@@ -77,7 +77,7 @@
   
   <header>
     
-      <h1 class="entry-title">Dns and Ptr Records Quick Notes</h1>
+      <h1 class="entry-title">Talk: Feedback</h1>
     
     
       <p class="meta">
@@ -93,118 +93,122 @@
   
 
 
-<time datetime="2013-10-18T03:18:00+08:00" pubdate data-updated="true">Oct 18<span>th</span>, 2013</time>
+<time datetime="2014-07-08T01:01:00+08:00" pubdate data-updated="true">Jul 8<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Every once in a blue moon I get to troubleshoot, help someone with or explain how reverse dns works but somehow it keeps getting misplaced inside my brain.</p>
+<div class="entry-content"><p><em>This is a talk I gave at work. It&rsquo;s the second time I give a similar talk so I&rsquo;ve decided to post it up. Unfortunately I have no slides nor video so I&rsquo;m posting my notes :&ndash;)</em></p>
 
-<p>So, for my future self, here it is:</p>
+<h1>Feedback</h1>
 
-<p>As example, lets pick github&rsquo;s IP.</p>
+<blockquote><p>Feedback: collecting information about present and past of
+a process to drive changes to the process itself</p></blockquote>
 
-<pre><code>[carlos@multi ~]$ host github.com
-github.com has address 192.30.252.129
-</code></pre>
+<p>Crucial to improve, if you don&rsquo;t know at what speed you&rsquo;re
+running you can&rsquo;t adjust to the speed limit.<br/>
+If you&rsquo;re not aware of problems, you can&rsquo;t fix them.<br/>
+If you don&rsquo;t see logs and exception stacktraces you won&rsquo;t
+know that your application crashes every time someone from
+Russia visits your website.</p>
 
-<p>The key thing to remember is that it is the same as forward dns, just on a &ldquo;funny&rdquo; zone name.</p>
+<p>Phrased like this sounds like a good thing but when you
+think about the actual process of giving/receiving feedback
+it changes a bit.<br/>
+Who likes performance appraisals? Code reviews?
+Submitting the system you worked on for 6 months to 3rd party review and scrutiny?</p>
 
-<p>In our example, the reverse dns record is: <code>129.252.30.192.in-addr.arpa</code><br/>
-(and the zone <code>252.30.192.in-addr.arpa</code>)</p>
+<h1>Why are we afraid of giving feedback?</h1>
 
-<h2>Find the authority over that zone:</h2>
+<p>When we ask for opinion/review, generally get &ldquo;it&rsquo;s ok/cool/nice&rdquo;.<br/>
+People point out obvious problems but it usually doesn&rsquo;t go further.</p>
 
-<pre><code>[carlos@multi ~]$ dig 129.252.30.192.in-addr.arpa
+<p>There are usually something that could be different.<br/>
+A better way, an alternative way, an experimental way.<br/>
+Not necessarily better but if you look at something and
+think &ldquo;I would have done it differently&rdquo;, maybe you should
+say that.<br/>
+The other person might like your idea or it might trigger
+another idea in her head.</p>
 
-; &lt;&lt;&gt;&gt; DiG 9.8.1-P1 &lt;&lt;&gt;&gt; 129.252.30.192.in-addr.arpa
-;; global options: +cmd
-;; Got answer:
-;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 21414
-;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 0
+<p>Another example.<br/>
+You know that person who always do something when presenting
+that distracts people from the presentation?<br/>
+They repeat the
+same phrase again and again or they mispronounce a word or
+whatever and at the end of the talk everybody is whispering
+about how many times he did this or that?<br/>
+That person could be a much better presenter if he could fix
+that behavior but it won&rsquo;t happen if he is not aware of it!</p>
 
-;; QUESTION SECTION:
-;129.252.30.192.in-addr.arpa.   IN      A
+<p>So, why are we so bad at giving feedback?</p>
 
-;; AUTHORITY SECTION:
-252.30.192.in-addr.arpa. 60     IN      SOA     ns1.p16.dynect.net. ops.github.com. 7 3600 600 604800 60
+<p>To answer that we need to look at another question.</p>
 
-;; Query time: 72 msec
-;; SERVER: 127.0.1.1#53(127.0.1.1)
-;; WHEN: Fri Oct 18 03:25:41 2013
-;; MSG SIZE  rcvd: 113
-</code></pre>
+<h1>Why are we so bad at receiving feedback?</h1>
 
-<h2>Get the PTR record for that ip:</h2>
+<p>People don&rsquo;t like being criticized.<br/>
+Humans are wired like that :(<br/>
+Hearing criticism doesn&rsquo;t change who you are but we don&rsquo;t like it anyway.<br/>
+We go into defensive mode, we need to show we did the best
+thing. We need to prove the person wrong!</p>
 
-<pre><code>[carlos@multi ~]$ dig PTR 129.252.30.192.in-addr.arpa
+<p>To avoid confrontation, nobody wants to give nor receive feedback.</p>
 
-; &lt;&lt;&gt;&gt; DiG 9.8.1-P1 &lt;&lt;&gt;&gt; PTR 129.252.30.192.in-addr.arpa
-;; global options: +cmd
-;; Got answer:
-;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 29787
-;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+<h1>Why is it bad?</h1>
 
-;; QUESTION SECTION:
-;129.252.30.192.in-addr.arpa.   IN  PTR
+<p>If you both don&rsquo;t give feedback not to hurt or make others angry
+and you don&rsquo;t actively seek feedback, it only happens when a problem
+occurs (or someone explodes). That&rsquo;s the time when emotions are high
+and openness is low.</p>
 
-;; ANSWER SECTION:
-129.252.30.192.in-addr.arpa. 3189 IN    PTR ip1b-lb3-prd.iad.github.com.
+<p>That makes people less willing to seek improvement generating a vicious cycle.</p>
 
-;; Query time: 29 msec
-;; SERVER: 127.0.1.1#53(127.0.1.1)
-;; WHEN: Fri Oct 18 03:28:44 2013
-;; MSG SIZE  rcvd: 86
-</code></pre>
+<h1>How to fix it, then?</h1>
 
-<h3>Directly from authority</h3>
+<p>Ermm..</p>
 
-<p>And if you&rsquo;re trying to troubleshoot whether your ISP correctly updated the PTR records you requested, you can ask the authority directly and avoid waiting for propagation:</p>
+<ul>
+<li>Improve on how we provide feedback</li>
+<li>Improve on how we receive feedback</li>
+</ul>
 
-<pre><code>[carlos@multi ~]$ dig PTR 129.252.30.192.in-addr.arpa @ns1.p16.dynect.net
 
-; &lt;&lt;&gt;&gt; DiG 9.8.1-P1 &lt;&lt;&gt;&gt; PTR 129.252.30.192.in-addr.arpa @ns1.p16.dynect.net
-;; global options: +cmd
-;; Got answer:
-;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 51495
-;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 4, ADDITIONAL: 0
-;; WARNING: recursion requested but not available
+<h1>How to receive feedback</h1>
 
-;; QUESTION SECTION:
-;129.252.30.192.in-addr.arpa.   IN      PTR
+<p>You can&rsquo;t force people to be nicer or to do things in a way that pleases you.<br/>
+But you can improve on how you handle it, so focus on that.</p>
 
-;; ANSWER SECTION:
-129.252.30.192.in-addr.arpa. 3600 IN    PTR     ip1b-lb3-prd.iad.github.com.
+<p>First, don&rsquo;t take it personally.<br/>
+Face everything as an opportunity to revisit a topic and think if anything
+could be improved.<br/>
+Be open. You don&rsquo;t have to agree but be willing to consider ideas.<br/>
+If it is a complain or an aggressive criticism, try to filter out the
+offending part and think about the root cause of that complain; Could you
+have done anything different so that there would be no complain?</p>
 
-;; AUTHORITY SECTION:
-252.30.192.in-addr.arpa. 86400  IN      NS      ns1.p16.dynect.net.
-252.30.192.in-addr.arpa. 86400  IN      NS      ns3.p16.dynect.net.
-252.30.192.in-addr.arpa. 86400  IN      NS      ns2.p16.dynect.net.
-252.30.192.in-addr.arpa. 86400  IN      NS      ns4.p16.dynect.net.
+<h1>How to give feedback</h1>
 
-;; Query time: 476 msec
-;; SERVER: 2001:500:90:1::16#53(2001:500:90:1::16)
-;; WHEN: Fri Oct 18 03:31:39 2013
-;; MSG SIZE  rcvd: 172
-</code></pre>
+<p>Avoid doing it if you&rsquo;re angry or in bad mood.<br/>
+Consider what is the goal of your feedback and focus on having a
+constructive conversation.<br/>
+Don&rsquo;t expect the person to agree. You will
+be lucky if they at least listen :&ndash;)<br/>
+Consider that your idea/suggestion might not be better or might be
+missing parts of the picture.<br/>
+Even better, assume you&rsquo;re wrong; that there is something you don&rsquo;t know.<br/>
+Guide the conversation to try to understand where you&rsquo;re wrong.</p>
 
-<h2>Just simple resolution</h2>
+<h1>Wrap up</h1>
 
-<p>Now, for completeness sake, if all you want is the reverse dns, remember that <code>host</code> works on both ip and name.</p>
-
-<pre><code>[carlos@multi ~]$ host github.com
-github.com has address 192.30.252.130
-github.com mail is handled by 30 ASPMX3.GOOGLEMAIL.com.
-github.com mail is handled by 30 ASPMX2.GOOGLEMAIL.com.
-github.com mail is handled by 20 ALT1.ASPMX.L.GOOGLE.com.
-github.com mail is handled by 10 ASPMX.L.GOOGLE.com.
-github.com mail is handled by 20 ALT2.ASPMX.L.GOOGLE.com.
-[carlos@multi ~]$ host 192.30.252.130
-130.252.30.192.in-addr.arpa domain name pointer ip1c-lb3-prd.iad.github.com.
-[carlos@multi ~]$ 
-</code></pre>
+<p>Feedback is good, is crucial to improve (as person, as professional, as team).<br/>
+Most people are bad at both giving and receiving and avoid it as much as possible.<br/>
+There is no silver bullet, no easy solution.<br/>
+Be aware of the problem. Consider how you could do it better.<br/>
+Search about the topic, find more information :)<br/>
+And most important, practice. Stop avoiding it.</p>
 </div>
 
 
@@ -227,21 +231,15 @@ github.com mail is handled by 20 ALT2.ASPMX.L.GOOGLE.com.
   
 
 
-<time datetime="2013-10-18T03:18:00+08:00" pubdate data-updated="true">Oct 18<span>th</span>, 2013</time>
+<time datetime="2014-07-08T01:01:00+08:00" pubdate data-updated="true">Jul 8<span>th</span>, 2014</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/dns/'>dns</a>, <a class='category' href='/blog/categories/note-to-self/'>note-to-self</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.carloslima.name/blog/2013/10/18/dns-and-ptr-records-quick-notes/" data-via="" data-counturl="http://blog.carloslima.name/blog/2013/10/18/dns-and-ptr-records-quick-notes/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.carloslima.name/blog/2014/07/08/talk-feedback/" data-via="" data-counturl="http://blog.carloslima.name/blog/2014/07/08/talk-feedback/" >Tweet</a>
   
   
   
@@ -250,10 +248,8 @@ github.com mail is handled by 20 ALT2.ASPMX.L.GOOGLE.com.
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/10/16/git-submodules-how-not-to-use-it/" title="Previous Post: git submodules: how (not) to use it.">&laquo; git submodules: how (not) to use it.</a>
+        <a class="basic-alignment left" href="/blog/2013/11/05/running-perl-workers-on-iron-dot-io/" title="Previous Post: Running Perl Workers on Iron.IO">&laquo; Running Perl Workers on Iron.IO</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2013/11/05/running-perl-workers-on-iron-dot-io/" title="Next Post: Running Perl Workers on Iron.IO">Running Perl Workers on Iron.IO &raquo;</a>
       
     </p>
   </footer>
@@ -348,8 +344,8 @@ github.com mail is handled by 20 ALT2.ASPMX.L.GOOGLE.com.
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.carloslima.name/blog/2013/10/18/dns-and-ptr-records-quick-notes/';
-        var disqus_url = 'http://blog.carloslima.name/blog/2013/10/18/dns-and-ptr-records-quick-notes/';
+        var disqus_identifier = 'http://blog.carloslima.name/blog/2014/07/08/talk-feedback/';
+        var disqus_url = 'http://blog.carloslima.name/blog/2014/07/08/talk-feedback/';
         var disqus_script = 'embed.js';
       
     (function () {

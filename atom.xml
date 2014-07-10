@@ -4,7 +4,7 @@
   <title><![CDATA[carlos@blog ~/notes>]]></title>
   <link href="http://blog.carloslima.name/atom.xml" rel="self"/>
   <link href="http://blog.carloslima.name/"/>
-  <updated>2013-11-05T02:22:44+08:00</updated>
+  <updated>2014-07-11T02:36:56+08:00</updated>
   <id>http://blog.carloslima.name/</id>
   <author>
     <name><![CDATA[Carlos Lima]]></name>
@@ -12,6 +12,123 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Talk: Feedback]]></title>
+    <link href="http://blog.carloslima.name/blog/2014/07/08/talk-feedback/"/>
+    <updated>2014-07-08T01:01:00+08:00</updated>
+    <id>http://blog.carloslima.name/blog/2014/07/08/talk-feedback</id>
+    <content type="html"><![CDATA[<p><em>This is a talk I gave at work. It&rsquo;s the second time I give a similar talk so I&rsquo;ve decided to post it up. Unfortunately I have no slides nor video so I&rsquo;m posting my notes :&ndash;)</em></p>
+
+<h1>Feedback</h1>
+
+<blockquote><p>Feedback: collecting information about present and past of
+a process to drive changes to the process itself</p></blockquote>
+
+<p>Crucial to improve, if you don&rsquo;t know at what speed you&rsquo;re
+running you can&rsquo;t adjust to the speed limit.<br/>
+If you&rsquo;re not aware of problems, you can&rsquo;t fix them.<br/>
+If you don&rsquo;t see logs and exception stacktraces you won&rsquo;t
+know that your application crashes every time someone from
+Russia visits your website.</p>
+
+<p>Phrased like this sounds like a good thing but when you
+think about the actual process of giving/receiving feedback
+it changes a bit.<br/>
+Who likes performance appraisals? Code reviews?
+Submitting the system you worked on for 6 months to 3rd party review and scrutiny?</p>
+
+<h1>Why are we afraid of giving feedback?</h1>
+
+<p>When we ask for opinion/review, generally get &ldquo;it&rsquo;s ok/cool/nice&rdquo;.<br/>
+People point out obvious problems but it usually doesn&rsquo;t go further.</p>
+
+<p>There are usually something that could be different.<br/>
+A better way, an alternative way, an experimental way.<br/>
+Not necessarily better but if you look at something and
+think &ldquo;I would have done it differently&rdquo;, maybe you should
+say that.<br/>
+The other person might like your idea or it might trigger
+another idea in her head.</p>
+
+<p>Another example.<br/>
+You know that person who always do something when presenting
+that distracts people from the presentation?<br/>
+They repeat the
+same phrase again and again or they mispronounce a word or
+whatever and at the end of the talk everybody is whispering
+about how many times he did this or that?<br/>
+That person could be a much better presenter if he could fix
+that behavior but it won&rsquo;t happen if he is not aware of it!</p>
+
+<p>So, why are we so bad at giving feedback?</p>
+
+<p>To answer that we need to look at another question.</p>
+
+<h1>Why are we so bad at receiving feedback?</h1>
+
+<p>People don&rsquo;t like being criticized.<br/>
+Humans are wired like that :(<br/>
+Hearing criticism doesn&rsquo;t change who you are but we don&rsquo;t like it anyway.<br/>
+We go into defensive mode, we need to show we did the best
+thing. We need to prove the person wrong!</p>
+
+<p>To avoid confrontation, nobody wants to give nor receive feedback.</p>
+
+<h1>Why is it bad?</h1>
+
+<p>If you both don&rsquo;t give feedback not to hurt or make others angry
+and you don&rsquo;t actively seek feedback, it only happens when a problem
+occurs (or someone explodes). That&rsquo;s the time when emotions are high
+and openness is low.</p>
+
+<p>That makes people less willing to seek improvement generating a vicious cycle.</p>
+
+<h1>How to fix it, then?</h1>
+
+<p>Ermm..</p>
+
+<ul>
+<li>Improve on how we provide feedback</li>
+<li>Improve on how we receive feedback</li>
+</ul>
+
+
+<h1>How to receive feedback</h1>
+
+<p>You can&rsquo;t force people to be nicer or to do things in a way that pleases you.<br/>
+But you can improve on how you handle it, so focus on that.</p>
+
+<p>First, don&rsquo;t take it personally.<br/>
+Face everything as an opportunity to revisit a topic and think if anything
+could be improved.<br/>
+Be open. You don&rsquo;t have to agree but be willing to consider ideas.<br/>
+If it is a complain or an aggressive criticism, try to filter out the
+offending part and think about the root cause of that complain; Could you
+have done anything different so that there would be no complain?</p>
+
+<h1>How to give feedback</h1>
+
+<p>Avoid doing it if you&rsquo;re angry or in bad mood.<br/>
+Consider what is the goal of your feedback and focus on having a
+constructive conversation.<br/>
+Don&rsquo;t expect the person to agree. You will
+be lucky if they at least listen :&ndash;)<br/>
+Consider that your idea/suggestion might not be better or might be
+missing parts of the picture.<br/>
+Even better, assume you&rsquo;re wrong; that there is something you don&rsquo;t know.<br/>
+Guide the conversation to try to understand where you&rsquo;re wrong.</p>
+
+<h1>Wrap up</h1>
+
+<p>Feedback is good, is crucial to improve (as person, as professional, as team).<br/>
+Most people are bad at both giving and receiving and avoid it as much as possible.<br/>
+There is no silver bullet, no easy solution.<br/>
+Be aware of the problem. Consider how you could do it better.<br/>
+Search about the topic, find more information :)<br/>
+And most important, practice. Stop avoiding it.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Running Perl Workers on Iron.IO]]></title>
