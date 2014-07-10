@@ -113,3 +113,23 @@ There is no silver bullet, no easy solution.
 Be aware of the problem. Consider how you could do it better.  
 Search about the topic, find more information :)  
 And most important, practice. Stop avoiding it.  
+
+# Extra
+
+## Focus on the right stuff!
+
+> Criticism is driven by the frustration and fears of the giver, not from the needs of the recipient. The underlying assumption is that the recipient somehow "should know better" and needs to be set straight. The implied message is that the recipient's intentions are questionable, that there is something wrong with the recipient that the giver of criticism knows how to fix. In criticism, the problem is all in the recipient.  
+> In contrast, feedback has an air of caring concern, respect, and support. Far from being a sugar cookie, feedback is an honest, clear, adult to adult exchange about specific behaviors and the effects of those behaviors. The assumption is that both parties have positive intentions, that both parties want to be effective and to do what is right for the company and other people. Another assumption is that well-meaning people can have legitimate differences in perception. The person offering the feedback owns the feedback as being his reaction to the behavior of the other person. That is, the giver recognizes the fact that what is being offered is a perception, not absolute fact.  
+> -- Gary R. Casselman & Timothy C. Daughtry
+
+<div />
+
+> Punishing honest mistakes stifles creativity. I want people moving and shaking the earth and they're going to make mistakes.  
+> -- Ross Perot
+
+## Links
+
+* http://www.drjeffspar.com/fearoffeedback.pdf
+* http://www.lifehack.org/articles/productivity/how-give-constructive-feedback-and-avoid-ugly-confrontations.html
+
+Those are generally written for managers but the reasoning is the same.
