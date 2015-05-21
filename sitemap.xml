@@ -2,48 +2,54 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://blog.carloslima.name/2010/02/hosting-your-git-repository-on.html</loc>
-        <lastmod>2013-10-19T18:30:21+08:00</lastmod>
+        <lastmod>2015-05-21T02:07:33+08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.carloslima.name/2010/03/rsnapshot-style-backups-on-dreamhost.html</loc>
-        <lastmod>2013-10-15T01:44:28+08:00</lastmod>
+        <lastmod>2015-05-21T02:07:33+08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.carloslima.name/2010/03/solutionatic-pair-programming.html</loc>
-        <lastmod>2013-10-15T01:44:28+08:00</lastmod>
+        <lastmod>2015-05-21T02:07:33+08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.carloslima.name/2010/03/methodmissing-and-respondto-doing-it.html</loc>
-        <lastmod>2013-10-19T19:08:00+08:00</lastmod>
+        <lastmod>2015-05-21T02:07:33+08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.carloslima.name/blog/2013/10/16/git-submodules-how-not-to-use-it/</loc>
-        <lastmod>2013-10-16T04:25:47+08:00</lastmod>
+        <lastmod>2015-05-21T02:07:33+08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.carloslima.name/blog/2013/10/18/dns-and-ptr-records-quick-notes/</loc>
-        <lastmod>2013-10-18T03:59:58+08:00</lastmod>
+        <lastmod>2015-05-21T02:07:33+08:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.carloslima.name/blog/2013/11/05/running-perl-workers-on-iron-dot-io/
         </loc>
-        <lastmod>2013-11-05T02:21:52+08:00</lastmod>
+        <lastmod>2015-05-21T02:07:33+08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.carloslima.name/blog/2014/07/08/talk-feedback/</loc>
-        <lastmod>2014-07-11T02:46:19+08:00</lastmod>
+        <lastmod>2015-05-21T02:07:33+08:00</lastmod>
     </url>
     <url>
-        <loc>http://blog.carloslima.name/</loc>
-        <lastmod>2014-07-11T02:46:19+08:00</lastmod>
-    </url>
-    <url>
-        <loc>http://blog.carloslima.name/robots.txt</loc>
-        <lastmod>2013-10-14T02:11:54+08:00</lastmod>
+        <loc>
+            http://blog.carloslima.name/blog/2015/05/21/idrac-virtual-console-crashing-on-linux/
+        </loc>
+        <lastmod>2015-05-21T23:43:35+08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.carloslima.name/blog/archives/</loc>
-        <lastmod>2014-07-11T02:46:19+08:00</lastmod>
+        <lastmod>2015-05-21T23:43:35+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.carloslima.name/</loc>
+        <lastmod>2015-05-21T23:43:35+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.carloslima.name/robots.txt</loc>
+        <lastmod>2015-05-21T02:07:33+08:00</lastmod>
     </url>
 </urlset>

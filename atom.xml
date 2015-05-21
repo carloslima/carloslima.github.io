@@ -4,7 +4,7 @@
   <title><![CDATA[carlos@blog ~/notes>]]></title>
   <link href="http://blog.carloslima.name/atom.xml" rel="self"/>
   <link href="http://blog.carloslima.name/"/>
-  <updated>2014-07-11T02:47:00+08:00</updated>
+  <updated>2015-05-22T00:04:41+08:00</updated>
   <id>http://blog.carloslima.name/</id>
   <author>
     <name><![CDATA[Carlos Lima]]></name>
@@ -12,6 +12,167 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iDrac virtual console crashing on linux]]></title>
+    <link href="http://blog.carloslima.name/blog/2015/05/21/idrac-virtual-console-crashing-on-linux/"/>
+    <updated>2015-05-21T02:13:00+08:00</updated>
+    <id>http://blog.carloslima.name/blog/2015/05/21/idrac-virtual-console-crashing-on-linux</id>
+    <content type="html"><![CDATA[<h2>iDrac</h2>
+
+<p><a href="https://en.wikipedia.org/wiki/Dell_DRAC">iDrac</a> (or any other <a href="https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface">IPMI</a>) is great and can really save your time and your life, but
+it is really frustrating to find out that your out-of-band virtual console crashes on you at
+the moment you need it the most.</p>
+
+<p>Given that this particular problem has struck me a few times already I decided to write a
+post to my future self and save me some trouble.</p>
+
+<h2>Scenario</h2>
+
+<p>After receiving an alert and failing to connect to the host, you log into the iDrac&rsquo;s web
+interface and click &ldquo;Launch&rdquo; on the Virtual Console option.<br/>
+It downloads a file called <code>viewer.jnlp</code>.<br/>
+You start it with <code>javaws viewer.jnlp</code> and, after a few confirmation dialogs, it explodes!</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>carlos@multi ~/Downloads&gt; javaws viewer.jnlp
+</span><span class='line'>This application does not specify a Codebase in its manifest. Please verify with the applet's vendor. Continuing. See: http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/security/no_redeploy.html for details.
+</span><span class='line'>This application does not specify a Codebase in its manifest. Please verify with the applet's vendor. Continuing. See: http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/security/no_redeploy.html for details.
+</span><span class='line'>Application title was not found in manifest. Check with application vendor
+</span><span class='line'>KVM/VM Client Version: 5.01.01 (Build 22)
+</span><span class='line'>ProtocolAPCP.receieveSessionSetup : reconType = 101
+</span><span class='line'>capabilities..4
+</span><span class='line'>#
+</span><span class='line'># A fatal error has been detected by the Java Runtime Environment:
+</span><span class='line'>#
+</span><span class='line'>#  SIGSEGV (0xb) at pc=0x00007f1268a72550, pid=14296, tid=139717301577472
+</span><span class='line'>#
+</span><span class='line'># JRE version: OpenJDK Runtime Environment (8.0_45-b14) (build 1.8.0_45-b14)
+</span><span class='line'># Java VM: OpenJDK 64-Bit Server VM (25.45-b02 mixed mode linux-amd64 compressed oops)
+</span><span class='line'># Problematic frame:
+</span><span class='line'># C  0x00007f1268a72550
+</span><span class='line'>#
+</span><span class='line'># Failed to write core dump. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+</span><span class='line'>#
+</span><span class='line'># An error report file with more information is saved as:
+</span><span class='line'># /home/carlos/Downloads/hs_err_pid14296.log
+</span><span class='line'>#
+</span><span class='line'># If you would like to submit a bug report, please visit:
+</span><span class='line'>#   http://bugreport.java.com/bugreport/crash.jsp
+</span><span class='line'>#
+</span><span class='line'>fish: Job 1, “javaws viewer.jnlp ” terminated by signal SIGABRT (Abort)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Looking into the log file gives no better clue.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>---------------  T H R E A D  ---------------
+</span><span class='line'>
+</span><span class='line'>Current thread (0x00007f1289ae0000):  JavaThread "iDRAC7 Virtual Console Client" [_thread_in_native, id=14329, stack(0x00007f1278112000,0x00007f1278213000)]
+</span><span class='line'>
+</span><span class='line'>siginfo: si_signo: 11 (SIGSEGV), si_code: 1 (SEGV_MAPERR), si_addr: 0x00007f1268a72550
+</span><span class='line'>
+</span><span class='line'>Registers:
+</span><span class='line'>RAX=0x00007f1268a72550, RBX=0x0000000000000378, RCX=0x0000000000000000, RDX=0x00007f12782102cf
+</span><span class='line'>RSP=0x00007f12782102e8, RBP=0x00007f1278210550, RSI=0x00007f12698cf477, RDI=0x00007f12698cf590
+</span><span class='line'>R8 =0x00007f1298984908, R9 =0x0000000000000000, R10=0x00007f1268d5e380, R11=0x0000000000000202
+</span><span class='line'>R12=0x0000000000000000, R13=0x00007f1269e15eb0, R14=0x00007f12782107b8, R15=0x00007f1289ae0000
+</span><span class='line'>RIP=0x00007f1268a72550, EFLAGS=0x0000000000010206, CSGSFS=0x0000000000000033, ERR=0x0000000000000014
+</span><span class='line'>  TRAPNO=0x000000000000000e
+</span><span class='line'>
+</span><span class='line'>Top of Stack: (sp=0x00007f12782102e8)
+</span><span class='line'>0x00007f12782102e8:   00007f1269800440 0000000000000000
+</span><span class='line'>(...)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There is a lot of information there but going thru java stacktraces of your virtual console tool while
+your server is down is undesired at best.</p>
+
+<h2>Solution</h2>
+
+<p>Fortunately the solution is simple.</p>
+
+<p>Open the <code>viewer.jnlp</code> file.<br/>
+There will be a bunch of OS and architecture-specific lines like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> &lt;resources os="Windows" arch="x85"&gt;
+</span><span class='line'>   &lt;nativelib href="https://server.example.com:443/software/avctKVMIOWin32.jar" download="eager"/&gt;
+</span><span class='line'>   &lt;nativelib href="https://server.example.com:443/software/avctVMAPI_DLLWin32.jar" download="eager"/&gt;
+</span><span class='line'> &lt;/resources&gt;
+</span><span class='line'> &lt;resources os="Windows" arch="amd64"&gt;
+</span><span class='line'>   &lt;nativelib href="https://server.example.com:443/software/avctKVMIOWin64.jar" download="eager"/&gt;
+</span><span class='line'>   &lt;nativelib href="https://server.example.com:443/software/avctVMAPI_DLLWin64.jar" download="eager"/&gt;
+</span><span class='line'> &lt;/resources&gt;
+</span><span class='line'> (...)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Delete all of them, except for the relevant one. In my case:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  &lt;resources os="Linux" arch="x86_64"&gt;
+</span><span class='line'>    &lt;nativelib href="https://server.example.com:443/software/avctKVMIOLinux64.jar" download="eager"/&gt;
+</span><span class='line'>   &lt;nativelib href="https://server.example.com:443/software/avctVMAPI_DLLLinux64.jar" download="eager"/&gt;
+</span><span class='line'>  &lt;/resources&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s it. Running <code>javaws viewer.jnlp</code> should work fine now.</p>
+
+<p>I believe this is not the &ldquo;correct&rdquo; solution but it gets you going.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Talk: Feedback]]></title>
