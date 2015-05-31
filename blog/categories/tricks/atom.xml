@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: tricks | carlos@blog ~/notes>]]></title>
+  <link href="http://blog.carloslima.name/blog/categories/tricks/atom.xml" rel="self"/>
+  <link href="http://blog.carloslima.name/"/>
+  <updated>2015-05-31T20:39:35+08:00</updated>
+  <id>http://blog.carloslima.name/</id>
+  <author>
+    <name><![CDATA[Carlos Lima]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[External commands - Vim Tricks]]></title>
+    <link href="http://blog.carloslima.name/blog/2015/05/31/external-commands-vim-tricks/"/>
+    <updated>2015-05-31T13:37:00+08:00</updated>
+    <id>http://blog.carloslima.name/blog/2015/05/31/external-commands-vim-tricks</id>
+    <content type="html"><![CDATA[<p>While editing code, I frequently cycle between changing the code and running some commands: running
+unit tests, linting tools, style checker, restarting services, etc.</p>
+
+<p>I generaly do that directly from inside vim with <code>:!command</code> and then repeating it with <code>:!(up arrow)</code></p>
+
+<p>While this is good, I learned a trick a while ago that still ranks as one of my favorites.</p>
+
+<h1>The trick</h1>
+
+<p>Add this to your <code>.vimrc</code></p>
+
+<p><code>
+map \] :wa&lt;bar&gt;&lt;UP&gt;&lt;CR&gt;
+</code></p>
+
+<p>Then run your command as <code>:wa|!command</code> and repeat it with just <code>\]</code> directly on normal mode.</p>
+
+<p>If <code>\</code> and <code>]</code> are not next to each other on your keyboard layout, just change the mapping
+to something that is very easy and convenient to type :)</p>
+
+<h1>The advantage</h1>
+
+<p>This is quicker to type, it saves all the files before running the command and it still allows you
+to run that one-off <code>:!command</code> in between your cycle without it getting in the way of your repetition.</p>
+
+<p>That&rsquo;s it.
+Happy Vimming!</p>
+]]></content>
+  </entry>
+  
+</feed>

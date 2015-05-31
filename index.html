@@ -9,8 +9,8 @@
   <meta name="author" content="Carlos Lima">
 
   
-  <meta name="description" content="iDrac iDrac (or any other IPMI) is great and can really save your time and your life, but
-it is really frustrating to find out that your out-of-band &hellip;">
+  <meta name="description" content="While editing code, I frequently cycle between changing the code and running some commands: running
+unit tests, linting tools, style checker, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -75,6 +75,68 @@ it is really frustrating to find out that your out-of-band &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/31/external-commands-vim-tricks/">External Commands - Vim Tricks</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-31T13:37:00+08:00" pubdate data-updated="true">May 31<span>st</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>While editing code, I frequently cycle between changing the code and running some commands: running
+unit tests, linting tools, style checker, restarting services, etc.</p>
+
+<p>I generaly do that directly from inside vim with <code>:!command</code> and then repeating it with <code>:!(up arrow)</code></p>
+
+<p>While this is good, I learned a trick a while ago that still ranks as one of my favorites.</p>
+
+<h1>The trick</h1>
+
+<p>Add this to your <code>.vimrc</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>map \] :wa&lt;bar&gt;&lt;UP&gt;&lt;CR&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then run your command as <code>:wa|!command</code> and repeat it with just <code>\]</code> directly on normal mode.</p>
+
+<p>If <code>\</code> and <code>]</code> are not next to each other on your keyboard layout, just change the mapping
+to something that is very easy and convenient to type :)</p>
+
+<h1>The advantage</h1>
+
+<p>This is quicker to type, it saves all the files before running the command and it still allows you
+to run that one-off <code>:!command</code> in between your cycle without it getting in the way of your repetition.</p>
+
+<p>That&rsquo;s it.
+Happy Vimming!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1541,6 +1603,10 @@ carlos@ubuntu:~/dev$
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/31/external-commands-vim-tricks/">External Commands - Vim Tricks</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/21/idrac-virtual-console-crashing-on-linux/">iDrac Virtual Console Crashing on Linux</a>
       </li>
     
@@ -1554,10 +1620,6 @@ carlos@ubuntu:~/dev$
     
       <li class="post">
         <a href="/blog/2013/10/18/dns-and-ptr-records-quick-notes/">Dns and Ptr Records Quick Notes</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/10/16/git-submodules-how-not-to-use-it/">Git Submodules: How (Not) to Use It.</a>
       </li>
     
   </ul>
